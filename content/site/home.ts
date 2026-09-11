@@ -4,7 +4,6 @@
  */
 
 export const hero = {
-  eyebrow: "SaaS animation studio  ·  WordPress  ·  Software  ·  Video",
   headlineBefore: "We",
   rotatingWords: ["animate", "launch", "explain", "build"],
   headlineAfter: "software",
@@ -18,7 +17,18 @@ export const hero = {
     { value: 5, suffix: "", label: "services, one studio" },
     { value: 48, suffix: "h", label: "first cut turnaround" },
   ],
-  orbit: ["SaaS", "Motion", "Video", "WP", "React", "Edit"],
+  /**
+   * `icon` keys map to a Lucide component in the Hero section. Keep the
+   * key here and the icon there, so content stays free of components.
+   */
+  orbit: [
+    { label: "SaaS animation", icon: "animation", ring: "inner" },
+    { label: "Explainer video", icon: "explainer", ring: "inner" },
+    { label: "WordPress", icon: "wordpress", ring: "inner" },
+    { label: "Software", icon: "software", ring: "outer" },
+    { label: "Video editing", icon: "editing", ring: "outer" },
+    { label: "Motion design", icon: "motion", ring: "outer" },
+  ],
 } as const;
 
 export const logos = {
@@ -97,16 +107,16 @@ export const work = {
   intro: "Eight of the last forty eight. Hover any card to play it.",
   cta: { label: "See all work", href: "/work" },
   rowOne: [
-    { name: "Ledgerly", note: "SaaS animation · feature launch" },
-    { name: "Nimbus", note: "Product film · 75s" },
-    { name: "Orbitals", note: "WordPress site + explainer" },
-    { name: "Quanta", note: "Onboarding flow animation" },
+    { name: "Ledgerly", note: "SaaS animation · feature launch", category: "SaaS animation" },
+    { name: "Nimbus", note: "Product film · 75s", category: "Explainer" },
+    { name: "Orbitals", note: "WordPress site + explainer", category: "WordPress" },
+    { name: "Quanta", note: "Onboarding flow animation", category: "SaaS animation" },
   ],
   rowTwo: [
-    { name: "Hexa", note: "Dashboard walkthrough" },
-    { name: "Northwind", note: "Custom web app + edits" },
-    { name: "Pulse", note: "30 social cutdowns" },
-    { name: "Atlas", note: "Explainer video · 60s" },
+    { name: "Hexa", note: "Dashboard walkthrough", category: "Explainer" },
+    { name: "Northwind", note: "Custom web app + edits", category: "Software" },
+    { name: "Pulse", note: "30 social cutdowns", category: "Editing" },
+    { name: "Atlas", note: "Explainer video · 60s", category: "Explainer" },
   ],
 } as const;
 
@@ -116,21 +126,29 @@ export const process = {
   steps: [
     {
       number: "01",
+      icon: "brief",
+      day: "Day 1",
       title: "Brief",
       body: "A 30 minute call. We learn the product, the audience and the one thing the video must make people feel.",
     },
     {
       number: "02",
+      icon: "script",
+      day: "Day 1 to 3",
       title: "Script + board",
       body: "Script, voice direction and a storyboard you approve before a single frame moves.",
     },
     {
       number: "03",
+      icon: "animate",
+      day: "Day 3 to 9",
       title: "Animate",
       body: "UI recreated at pixel level, then animated with real easing, depth and sound.",
     },
     {
       number: "04",
+      icon: "deliver",
+      day: "Day 10",
       title: "Deliver",
       body: "Master file plus cutdowns for web, social and sales decks. Revisions included.",
     },

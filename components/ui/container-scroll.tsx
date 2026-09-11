@@ -3,36 +3,52 @@
 /**
  * Container Scroll — adapted from Aceternity UI
  * (ui.aceternity.com/components/container-scroll-animation)
- * Vendored 2026-09-11. The screen tilts flat as the section scrolls past.
+ * Vendored 2026-09-11, rewritten without an animation library.
+ *
+ * A passive scroll listener writes one CSS custom property, throttled to
+ * one write per frame; the transform itself is CSS. Only transform is
+ * animated (M-01), and the default value keeps the panel flat so it
+ * looks correct with no JavaScript at all.
  */
-import { motion, useScroll, useTransform } from "motion/react";
-import { useRef, type ReactNode } from "react";
-import { usePrefersReducedMotion } from "@/components/motion/use-prefers-reduced-motion";
+import { useEffect, useRef, type ReactNode } from "react";
 
 export function ContainerScroll({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
-  const reduced = usePrefersReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
 
-  const rotateX = useTransform(scrollYProgress, [0, 0.45], [22, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.45], [0.92, 1]);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  if (reduced) {
-    return (
-      <div ref={ref} className="[perspective:1400px]">
-        {children}
-      </div>
-    );
-  }
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const rect = el.getBoundingClientRect();
+      const viewport = window.innerHeight;
+      // 0 while the panel is still below the fold, 1 once it has risen
+      // three quarters of the way up the viewport.
+      const progress = (viewport - rect.top) / (viewport * 0.8);
+      el.style.setProperty("--p", String(Math.min(Math.max(progress, 0), 1)));
+    };
+
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
 
   return (
-    <div ref={ref} className="[perspective:1400px]">
-      <motion.div style={{ rotateX, scale, transformOrigin: "50% 0%" }}>
-        {children}
-      </motion.div>
+    <div ref={ref} className="fw-scroll-tilt">
+      <div className="fw-scroll-tilt-inner">{children}</div>
     </div>
   );
 }

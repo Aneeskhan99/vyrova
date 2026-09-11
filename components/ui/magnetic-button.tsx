@@ -2,10 +2,10 @@
 
 /**
  * Magnetic Button — adapted from a 21st.dev magnetic-button pattern.
- * Vendored 2026-09-11. The button drifts toward the cursor, then springs
- * back. Disabled under reduced motion and on touch (no pointer events).
+ * Vendored 2026-09-11, rewritten without an animation library: the drift
+ * is a CSS transform written straight to the node, so the nav ships no
+ * Motion at all. Mouse only, and disabled under reduced motion.
  */
-import { motion, useMotionValue, useSpring } from "motion/react";
 import { useRef, type PointerEvent, type ReactNode } from "react";
 import { usePrefersReducedMotion } from "@/components/motion/use-prefers-reduced-motion";
 import { cn } from "@/lib/utils";
@@ -22,45 +22,39 @@ export function MagneticButton({
   children,
   href,
   className,
-  strength = 6,
+  strength = 7,
 }: MagneticButtonProps) {
   const ref = useRef<HTMLAnchorElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 260, damping: 20, mass: 0.4 });
-  const sy = useSpring(y, { stiffness: 260, damping: 20, mass: 0.4 });
   const reduced = usePrefersReducedMotion();
 
   function handleMove(event: PointerEvent<HTMLAnchorElement>) {
-    if (reduced || event.pointerType !== "mouse") return;
     const el = ref.current;
-    if (!el) return;
+    if (!el || reduced || event.pointerType !== "mouse") return;
     const rect = el.getBoundingClientRect();
-    const dx = event.clientX - (rect.left + rect.width / 2);
-    const dy = event.clientY - (rect.top + rect.height / 2);
-    x.set((dx / rect.width) * strength * 2);
-    y.set((dy / rect.height) * strength * 2);
+    const dx = (event.clientX - (rect.left + rect.width / 2)) / rect.width;
+    const dy = (event.clientY - (rect.top + rect.height / 2)) / rect.height;
+    el.style.transform = `translate3d(${dx * strength * 2}px, ${dy * strength * 2}px, 0)`;
   }
 
   function reset() {
-    x.set(0);
-    y.set(0);
+    const el = ref.current;
+    if (el) el.style.transform = "translate3d(0, 0, 0)";
   }
 
   return (
-    <motion.a
+    <a
       ref={ref}
       href={href}
-      style={{ x: sx, y: sy }}
       onPointerMove={handleMove}
       onPointerLeave={reset}
       className={cn(
-        "inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3",
+        "inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-ink px-5 py-3",
         "text-sm font-semibold text-surface",
+        "transition-transform duration-300 ease-out",
         className,
       )}
     >
       {children}
-    </motion.a>
+    </a>
   );
 }

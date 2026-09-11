@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   trailingSlash: true,
   reactStrictMode: true,
+  experimental: {
+    // Rewrites `import { Play } from "lucide-react"` into a direct path
+    // so a handful of icons cannot drag the whole set into the bundle.
+    optimizePackageImports: ["lucide-react"],
+  },
 };
 
 export default nextConfig;

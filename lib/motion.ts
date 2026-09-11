@@ -1,6 +1,9 @@
 /**
  * Every duration and easing in the site lives here (M-02).
  * Changing the feel of the whole site is one edit to this file.
+ *
+ * These are plain numbers, not tied to any animation library — the CSS
+ * counterparts live alongside them in app/globals.css.
  */
 
 export const DURATION = {

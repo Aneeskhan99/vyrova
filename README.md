@@ -1,8 +1,14 @@
 # FrameWell
 
 Marketing site for FrameWell. Next.js 15 (App Router), TypeScript strict,
-Tailwind 4, Motion. Static export — the build output is a plain folder of
+Tailwind 4. Static export — the build output is a plain folder of
 HTML/CSS/JS that any host will serve.
+
+There is deliberately **no animation library**. Every effect on the site
+is CSS, driven where it needs to be by a small IntersectionObserver or a
+throttled scroll listener. That keeps roughly 35 KB of JavaScript off the
+first load, which on a page this animated is the difference between quick
+and sluggish.
 
 ## First run
 

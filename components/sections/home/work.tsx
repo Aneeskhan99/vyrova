@@ -1,32 +1,22 @@
-"use client";
-
-import { motion, useScroll, useTransform } from "motion/react";
 import { ArrowRight } from "lucide-react";
-import { useRef } from "react";
 import { Container } from "@/components/layout/container";
-import { MagicCard } from "@/components/ui/magic-card";
+import { Marquee } from "@/components/ui/marquee";
+import { PauseOffscreen } from "@/components/motion/pause-offscreen";
 import { Reveal } from "@/components/motion/reveal";
-import { usePrefersReducedMotion } from "@/components/motion/use-prefers-reduced-motion";
-import { UiMock } from "@/components/sections/shared/ui-mock";
+import { ProjectCard } from "@/components/sections/shared/project-card";
+import { LOOP } from "@/lib/motion";
 import { work } from "@/content/site/home";
-import { cn } from "@/lib/utils";
 
 /**
- * Two rows drifting in opposite directions as the section scrolls.
- * Only `x` is animated (M-01), and the rows are wider than the viewport
- * by design so the drift never exposes an empty edge.
+ * Two rows travelling in opposite directions, continuously rather than
+ * only while the page scrolls — so the section is alive even when the
+ * reader stops. Hovering anywhere on a row stops it so a card can
+ * actually be read, and the cards lift under the cursor.
+ *
+ * CSS animation rather than a scroll-linked transform: no animation
+ * library, no work on the scroll thread, and it pauses off-screen (M-06).
  */
 export function Work() {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduced = usePrefersReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-
-  const xLeft = useTransform(scrollYProgress, [0, 1], ["-6%", "2%"]);
-  const xRight = useTransform(scrollYProgress, [0, 1], ["2%", "-6%"]);
-
   return (
     <section id="work" className="overflow-hidden py-24 lg:py-32">
       <Container>
@@ -43,7 +33,7 @@ export function Work() {
             </div>
             <a
               href={work.cta.href}
-              className="inline-flex items-center gap-2 self-start text-[0.9375rem] font-semibold text-accent"
+              className="inline-flex items-center gap-2 self-start whitespace-nowrap text-[0.9375rem] font-semibold text-accent"
             >
               {work.cta.label}
               <ArrowRight aria-hidden="true" className="size-4" />
@@ -52,65 +42,37 @@ export function Work() {
         </Reveal>
       </Container>
 
-      <div ref={ref} className="mt-14 flex flex-col gap-5">
-        <motion.div
-          style={reduced ? undefined : { x: xLeft }}
-          className="flex w-max gap-5 px-5"
-        >
+      <PauseOffscreen className="mt-14 flex flex-col gap-5">
+        <Marquee duration={LOOP.marqueeSlow} itemGap="1.25rem" pauseOnHover>
           {work.rowOne.map((item, i) => (
-            <WorkCard key={item.name} name={item.name} note={item.note} index={i} />
+            <ProjectCard
+              key={item.name}
+              name={item.name}
+              note={item.note}
+              category={item.category}
+              index={i}
+              className="w-[19rem] shrink-0 sm:w-[25rem]"
+            />
           ))}
-        </motion.div>
-        <motion.div
-          style={reduced ? undefined : { x: xRight }}
-          className="flex w-max gap-5 px-5"
+        </Marquee>
+        <Marquee
+          duration={LOOP.marqueeSlow}
+          itemGap="1.25rem"
+          pauseOnHover
+          reverse
         >
           {work.rowTwo.map((item, i) => (
-            <WorkCard key={item.name} name={item.name} note={item.note} index={i + 4} />
+            <ProjectCard
+              key={item.name}
+              name={item.name}
+              note={item.note}
+              category={item.category}
+              index={i + 4}
+              className="w-[19rem] shrink-0 sm:w-[25rem]"
+            />
           ))}
-        </motion.div>
-      </div>
+        </Marquee>
+      </PauseOffscreen>
     </section>
-  );
-}
-
-const TINTS = [
-  "from-cyan/30 to-accent/20",
-  "from-indigo-200/60 to-indigo-300/40",
-  "from-emerald-200/60 to-emerald-300/40",
-  "from-amber-200/60 to-amber-300/40",
-] as const;
-
-function WorkCard({
-  name,
-  note,
-  index,
-}: {
-  name: string;
-  note: string;
-  index: number;
-}) {
-  const tint = TINTS[index % TINTS.length];
-
-  return (
-    <MagicCard className="w-[19rem] shrink-0 rounded-tile border border-line bg-surface shadow-card sm:w-[25rem]">
-      <article>
-        <div
-          className={cn(
-            "relative flex aspect-[16/10] items-center justify-center bg-gradient-to-br p-7",
-            tint,
-          )}
-        >
-          <UiMock className="shadow-card" bars={8} highlight={index % 8} />
-        </div>
-        <div className="flex items-center justify-between gap-4 px-6 py-5">
-          <div className="flex min-w-0 flex-col gap-0.5">
-            <h3 className="truncate font-semibold">{name}</h3>
-            <p className="truncate text-[0.8125rem] text-muted">{note}</p>
-          </div>
-          <ArrowRight aria-hidden="true" className="size-4 shrink-0 text-accent" />
-        </div>
-      </article>
-    </MagicCard>
   );
 }

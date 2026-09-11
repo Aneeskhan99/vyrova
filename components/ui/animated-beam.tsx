@@ -2,13 +2,16 @@
 
 /**
  * Animated Beam — adapted from Magic UI
- * (magicui.design/docs/components/animated-beam). Vendored 2026-09-11.
- * Draws a curved SVG path between two elements and runs a light along it.
- * Positions are measured on mount and on resize only — not per frame.
+ * (magicui.design/docs/components/animated-beam). Vendored 2026-09-11,
+ * rewritten without an animation library.
+ *
+ * The travelling light is a dashed stroke whose offset animates in CSS.
+ * `pathLength={100}` normalises the path so one dash length works for
+ * every curve regardless of its real length. Positions are measured on
+ * mount and on resize only, never per frame.
  */
-import { motion } from "motion/react";
-import { useCallback, useEffect, useId, useState, type RefObject } from "react";
-import { usePrefersReducedMotion } from "@/components/motion/use-prefers-reduced-motion";
+import { useCallback, useEffect, useState, type RefObject } from "react";
+import { LOOP } from "@/lib/motion";
 
 type AnimatedBeamProps = {
   containerRef: RefObject<HTMLElement | null>;
@@ -18,9 +21,8 @@ type AnimatedBeamProps = {
   curvature?: number;
   /** Seconds for one pass of the light. */
   duration?: number;
-  /** Seconds to wait before the first pass. Stagger these across a diagram. */
+  /** Seconds before the first pass. Stagger these across a diagram. */
   delay?: number;
-  reverse?: boolean;
 };
 
 export function AnimatedBeam({
@@ -28,12 +30,9 @@ export function AnimatedBeam({
   fromRef,
   toRef,
   curvature = 0,
-  duration = 4,
+  duration = LOOP.beam,
   delay = 0,
-  reverse = false,
 }: AnimatedBeamProps) {
-  const id = useId().replace(/:/g, "");
-  const reduced = usePrefersReducedMotion();
   const [path, setPath] = useState("");
   const [box, setBox] = useState({ width: 0, height: 0 });
 
@@ -80,37 +79,20 @@ export function AnimatedBeam({
       width={box.width}
       height={box.height}
       viewBox={`0 0 ${box.width} ${box.height}`}
-      className="pointer-events-none absolute left-0 top-0"
+      className="pointer-events-none absolute left-0 top-0 overflow-visible"
       fill="none"
     >
       <path d={path} stroke="currentColor" strokeWidth={1.5} className="text-ink/10" />
-      {!reduced && (
-        <>
-          <path d={path} strokeWidth={2} stroke={`url(#${id})`} strokeLinecap="round" />
-          <defs>
-            <motion.linearGradient
-              id={id}
-              gradientUnits="userSpaceOnUse"
-              initial={{ x1: "0%", x2: "5%", y1: "0%", y2: "0%" }}
-              animate={{
-                x1: reverse ? ["100%", "-5%"] : ["-5%", "100%"],
-                x2: reverse ? ["105%", "0%"] : ["0%", "105%"],
-              }}
-              transition={{
-                duration,
-                delay,
-                repeat: Infinity,
-                repeatDelay: 1.2,
-                ease: "linear",
-              }}
-            >
-              <stop stopColor="#22e5f0" stopOpacity="0" />
-              <stop stopColor="#22e5f0" />
-              <stop offset="1" stopColor="#008c99" stopOpacity="0" />
-            </motion.linearGradient>
-          </defs>
-        </>
-      )}
+      <path
+        className="fw-beam-dash"
+        d={path}
+        pathLength={100}
+        stroke="var(--color-cyan)"
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        strokeDasharray="12 100"
+        style={{ animationDuration: `${duration}s`, animationDelay: `${delay}s` }}
+      />
     </svg>
   );
 }

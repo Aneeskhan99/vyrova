@@ -22,7 +22,7 @@ export function Testimonials() {
       </Container>
 
       <PauseOffscreen className="mt-14">
-        <Marquee duration={LOOP.marqueeSlow}>
+        <Marquee duration={LOOP.marqueeSlow} itemGap="1.25rem" pauseOnHover>
           {testimonials.quotes.map((item) => (
             <figure
               key={item.name}

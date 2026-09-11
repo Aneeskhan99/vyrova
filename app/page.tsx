@@ -7,7 +7,7 @@ import { Work } from "@/components/sections/home/work";
 import { Process } from "@/components/sections/home/process";
 import { Testimonials } from "@/components/sections/home/testimonials";
 import { Faq } from "@/components/sections/home/faq";
-import { Cta } from "@/components/sections/home/cta";
+import { Cta } from "@/components/sections/shared/cta";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({

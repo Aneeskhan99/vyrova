@@ -10,7 +10,7 @@ export function Logos() {
         {logos.title}
       </p>
       <PauseOffscreen>
-        <Marquee duration={LOOP.marquee}>
+        <Marquee duration={LOOP.marquee} repeat={4} itemGap="3.5rem">
           {logos.names.map((name) => (
             <span
               key={name}

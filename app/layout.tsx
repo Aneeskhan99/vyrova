@@ -27,7 +27,20 @@ export default function RootLayout({
 }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="font-sans antialiased">
+      <head>
+        {/* Without JavaScript the reveal transitions never run, so make
+            their content visible rather than leaving the page blank. */}
+        <noscript>
+          <style>{`.fw-reveal{opacity:1;transform:none}`}</style>
+        </noscript>
+      </head>
+      {/*
+        Browser extensions such as Grammarly and ColorZilla add attributes
+        to <body> before React hydrates, which React reports as a mismatch.
+        Nothing in our markup differs between server and client, so the
+        warning is suppressed at this one element only.
+      */}
+      <body className="font-sans antialiased" suppressHydrationWarning>
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-surface"

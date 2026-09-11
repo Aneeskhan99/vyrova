@@ -1,9 +1,7 @@
 "use client";
 
-import { motion, useInView } from "motion/react";
-import { Children, useRef, type ReactNode } from "react";
-import { DURATION, EASE_OUT, RISE } from "@/lib/motion";
-import { usePrefersReducedMotion } from "./use-prefers-reduced-motion";
+import { Children, useEffect, useRef, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 type StaggerProps = {
   children: ReactNode;
@@ -15,40 +13,58 @@ type StaggerProps = {
 };
 
 /**
- * M-03. Reveals children one after another. Use for lists, grids and
- * card rows rather than giving each card its own Reveal with a
- * hand-tuned delay.
+ * M-03. Reveals children one after another. Same CSS-only approach as
+ * Reveal — one observer for the group, a transition delay per child.
  */
-export function Stagger({ children, step = 0.07, className, itemClassName }: StaggerProps) {
+export function Stagger({
+  children,
+  step = 0.07,
+  className,
+  itemClassName,
+}: StaggerProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-10% 0px -10% 0px" });
-  const reduced = usePrefersReducedMotion();
   const items = Children.toArray(children);
 
-  if (reduced) {
-    return (
-      <div ref={ref} className={className}>
-        {items.map((child, i) => (
-          <div key={i} className={itemClassName}>
-            {child}
-          </div>
-        ))}
-      </div>
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const reveal = () => {
+      el.querySelectorAll<HTMLElement>(".fw-reveal").forEach((child) => {
+        child.dataset.visible = "true";
+      });
+    };
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      reveal();
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry?.isIntersecting) {
+          reveal();
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "-6% 0px -6% 0px" },
     );
-  }
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div ref={ref} className={className}>
       {items.map((child, i) => (
-        <motion.div
+        <div
           key={i}
-          className={itemClassName}
-          initial={{ opacity: 0, y: RISE }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: RISE }}
-          transition={{ duration: DURATION.base, ease: EASE_OUT, delay: i * step }}
+          className={cn("fw-reveal", itemClassName)}
+          style={{ transitionDelay: `${i * step}s` }}
         >
           {child}
-        </motion.div>
+        </div>
       ))}
     </div>
   );

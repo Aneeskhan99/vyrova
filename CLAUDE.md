@@ -1,7 +1,9 @@
 # FrameWell website
 
 Marketing site for FrameWell, a SaaS animation and development studio.
-Next.js 15 App Router, TypeScript strict, Tailwind 4, Motion. Static export only.
+Next.js 15 App Router, TypeScript strict, Tailwind 4. Static export only.
+No animation library: every effect is CSS, driven where needed by a small
+IntersectionObserver or a throttled scroll listener.
 
 ## Hard rules
 
@@ -16,6 +18,9 @@ Next.js 15 App Router, TypeScript strict, Tailwind 4, Motion. Static export only
   a page or layout file.
 - Animate only transform and opacity.
 - All animation timing comes from `lib/motion.ts`. No inline durations.
+- Do not add an animation library. If an effect seems to need one, it
+  almost certainly does not — check how Reveal, ContainerScroll and
+  AnimatedBeam do it first.
 - Scroll entrances use `<Reveal>`. Never write an IntersectionObserver
   in a section file.
 - Every animation respects `usePrefersReducedMotion`.
