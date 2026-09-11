@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------
+   Design tokens — mirror of the Figma variables (T-01).
+   Never write a raw colour in a component. Add it here instead.
+   --------------------------------------------------------------- */
+@theme {
+  --color-ground: #fafbfc;
+  --color-surface: #ffffff;
+  --color-band: #f2f5f8;
+  --color-ink: #0d1219;
+  --color-ink-soft: #2b3640;
+  --color-muted: #616b7a;
+  --color-line: #e3e8ed;
+  --color-accent: #008c99;
+  --color-accent-soft: #e0f3f5;
+  --color-cyan: #22e5f0;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --radius-card: 1.25rem;
+  --radius-tile: 1.5rem;
+
+  --shadow-card: 0 1px 2px rgb(13 18 25 / 0.04), 0 10px 30px -12px rgb(13 18 25 / 0.12);
+  --shadow-lift: 0 1px 2px rgb(13 18 25 / 0.05), 0 24px 60px -20px rgb(0 140 153 / 0.22);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--color-ground);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background-color: var(--color-cyan);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Hero entrance (M-04).
+   Pure CSS so above-the-fold content is visible without JavaScript
+   and present in the static HTML.
+   --------------------------------------------------------------- */
+@keyframes fw-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.fw-rise {
+  animation: fw-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.fw-d1 { animation-delay: 0.06s; }
+.fw-d2 { animation-delay: 0.12s; }
+.fw-d3 { animation-delay: 0.18s; }
+.fw-d4 { animation-delay: 0.24s; }
+.fw-d5 { animation-delay: 0.3s; }
+
+/* Orbit path used by OrbitingCircles. */
+@keyframes fw-orbit {
+  from {
+    transform: rotate(var(--angle)) translateX(var(--radius)) rotate(calc(-1 * var(--angle)));
+  }
+  to {
+    transform: rotate(calc(var(--angle) + 360deg)) translateX(var(--radius))
+      rotate(calc(-1 * (var(--angle) + 360deg)));
+  }
+}
+
+/* Marquee track. */
+@keyframes fw-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+/* Border beam — a conic gradient rotating behind an inset mask. */
+@keyframes fw-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Shimmer sweep on the primary button. */
+@keyframes fw-shimmer {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(220%); }
+}
+
+/* ---------------------------------------------------------------
+   M-06: anything inside a paused wrapper stops when off-screen.
+   --------------------------------------------------------------- */
+[data-paused="true"] *,
+[data-paused="true"] {
+  animation-play-state: paused !important;
+}
+
+/* ---------------------------------------------------------------
+   M-05: global reduced-motion guard for the CSS-driven animations.
+   The JS ones read usePrefersReducedMotion instead.
+   --------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .fw-rise { animation: none; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
