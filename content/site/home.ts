@@ -18,16 +18,20 @@ export const hero = {
     { value: 48, suffix: "h", label: "first cut turnaround" },
   ],
   /**
-   * `icon` keys map to a Lucide component in the Hero section. Keep the
-   * key here and the icon there, so content stays free of components.
+   * The orbit shows the tools we actually work in.
+   *
+   * `file` is the filename in /public/logos — swap the SVG there and the
+   * logo changes, no code edit. `scale` nudges one logo that sits too
+   * large or too small in its tile, because downloaded brand SVGs all
+   * come with different built-in padding. See public/logos/README.md.
    */
   orbit: [
-    { label: "SaaS animation", icon: "animation", ring: "inner" },
-    { label: "Explainer video", icon: "explainer", ring: "inner" },
-    { label: "WordPress", icon: "wordpress", ring: "inner" },
-    { label: "Software", icon: "software", ring: "outer" },
-    { label: "Video editing", icon: "editing", ring: "outer" },
-    { label: "Motion design", icon: "motion", ring: "outer" },
+    { label: "Figma", file: "figma", ring: "inner", scale: 1 },
+    { label: "After Effects", file: "after-effects", ring: "inner", scale: 1 },
+    { label: "Rive", file: "rive", ring: "inner", scale: 1 },
+    { label: "WordPress", file: "wordpress", ring: "outer", scale: 1 },
+    { label: "Next.js", file: "nextjs", ring: "outer", scale: 1 },
+    { label: "DaVinci Resolve", file: "resolve", ring: "outer", scale: 1 },
   ],
 } as const;
 

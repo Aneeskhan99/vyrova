@@ -1,14 +1,4 @@
-import {
-  ArrowRight,
-  Clapperboard,
-  Code2,
-  Film,
-  Globe,
-  MonitorPlay,
-  Play,
-  Scissors,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowRight, Play } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import { WordRotate } from "@/components/ui/word-rotate";
@@ -21,16 +11,6 @@ import { hero } from "@/content/site/home";
 
 const INNER_RADIUS = 160;
 const OUTER_RADIUS = 248;
-
-/** Content keys to icons. Content files stay free of components (C-01). */
-const ICONS: Record<string, LucideIcon> = {
-  animation: MonitorPlay,
-  explainer: Clapperboard,
-  wordpress: Globe,
-  software: Code2,
-  editing: Scissors,
-  motion: Film,
-};
 
 /**
  * Above the fold, so every entrance here is a CSS animation (M-04) and
@@ -113,7 +93,12 @@ export function Hero() {
                   duration={LOOP.orbitInner}
                   angle={i * 120}
                 >
-                  <OrbitIcon icon={item.icon} label={item.label} size="sm" />
+                  <OrbitLogo
+                    file={item.file}
+                    label={item.label}
+                    size="sm"
+                    scale={item.scale}
+                  />
                 </Orbit>
               ))}
 
@@ -125,7 +110,12 @@ export function Hero() {
                   angle={i * 120 + 60}
                   reverse
                 >
-                  <OrbitIcon icon={item.icon} label={item.label} size="lg" />
+                  <OrbitLogo
+                    file={item.file}
+                    label={item.label}
+                    size="lg"
+                    scale={item.scale}
+                  />
                 </Orbit>
               ))}
 
@@ -140,26 +130,49 @@ export function Hero() {
   );
 }
 
-function OrbitIcon({
-  icon,
+/**
+ * One tool logo in its tile.
+ *
+ * The mark is an <img> pointing at /public/logos/<file>.svg, so a real
+ * brand SVG replaces a placeholder by overwriting the file — no code
+ * change, and no icon library in the hero bundle. Decorative: alt is
+ * empty and the name is carried by the title, because the same tools
+ * are named in text further down the page (M-09, A-01).
+ *
+ * `scale` exists because downloaded brand SVGs each carry their own
+ * built-in padding; one logo always needs a nudge to sit right.
+ */
+function OrbitLogo({
+  file,
   label,
   size,
+  scale = 1,
 }: {
-  icon: string;
+  file: string;
   label: string;
   size: "sm" | "lg";
+  scale?: number;
 }) {
-  const Icon = ICONS[icon] ?? MonitorPlay;
+  const tile = size === "lg" ? 72 : 60;
+  const mark = Math.round((size === "lg" ? 30 : 25) * scale);
+
   return (
     <span
       title={label}
-      className={
-        size === "lg"
-          ? "flex size-[68px] items-center justify-center rounded-full border border-line bg-surface text-accent shadow-card"
-          : "flex size-16 items-center justify-center rounded-full border border-line bg-surface text-accent shadow-card"
-      }
+      style={{ width: tile, height: tile }}
+      className="flex items-center justify-center rounded-full border border-line bg-surface shadow-card"
     >
-      <Icon className={size === "lg" ? "size-6" : "size-[22px]"} strokeWidth={1.75} />
+      {/* next/image is deliberately not used: it would put JavaScript in
+          front of the hero for a 1 KB static SVG (M-04, P-02). */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={`/logos/${file}.svg`}
+        alt=""
+        width={mark}
+        height={mark}
+        style={{ width: mark, height: mark }}
+        className="object-contain"
+      />
     </span>
   );
 }
