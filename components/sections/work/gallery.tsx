@@ -1,39 +1,23 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { ProjectCard } from "@/components/sections/shared/project-card";
 import { FILTERS, projects } from "@/content/site/work";
 import { cn } from "@/lib/utils";
 
 /**
- * Filter tabs with an indicator that slides to the active pill, and the
- * grid they filter. One client component rather than two, because the
- * tabs and the grid share a single piece of state.
+ * Filter tabs and the grid they filter. One client component rather
+ * than two, because the tabs and the grid share a single piece of state.
  *
- * The indicator is positioned from the active button's measured box, so
- * it stays correct when the labels wrap at narrow widths.
+ * The active pill is the button's own background, not an absolutely
+ * positioned element measured from it. A measured pill slides nicely but
+ * needs a correct measurement to exist at all, and it cannot span a
+ * wrapped row — at narrow widths it renders as a blob across two lines.
+ * So the list scrolls sideways instead of wrapping, and the pill is
+ * simply painted on the active tab.
  */
 export function Gallery() {
   const [active, setActive] = useState<string>(FILTERS[0]);
-  const listRef = useRef<HTMLDivElement>(null);
-  const [indicator, setIndicator] = useState({ left: 0, width: 0 });
-
-  useLayoutEffect(() => {
-    const list = listRef.current;
-    if (!list) return;
-
-    const move = () => {
-      const current = list.querySelector<HTMLElement>('[data-active="true"]');
-      if (current) {
-        setIndicator({ left: current.offsetLeft, width: current.offsetWidth });
-      }
-    };
-
-    move();
-    const observer = new ResizeObserver(move);
-    observer.observe(list);
-    return () => observer.disconnect();
-  }, [active]);
 
   const visible =
     active === FILTERS[0]
@@ -43,35 +27,37 @@ export function Gallery() {
   return (
     <>
       <div
-        ref={listRef}
         role="tablist"
         aria-label="Filter projects by service"
-        className="relative inline-flex flex-wrap gap-1 rounded-[1.75rem] border border-line bg-surface p-1.5 shadow-card"
+        className={cn(
+          "-mx-5 flex gap-1 overflow-x-auto px-5 sm:mx-0 sm:px-0",
+          // One row at every width; it scrolls rather than wrapping.
+          "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        )}
       >
-        <span
-          aria-hidden="true"
-          className="absolute top-1.5 h-[calc(100%-0.75rem)] rounded-full bg-ink transition-[left,width] duration-300 ease-out"
-          style={{ left: indicator.left, width: indicator.width }}
-        />
-        {FILTERS.map((filter) => {
-          const isActive = filter === active;
-          return (
-            <button
-              key={filter}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              data-active={isActive}
-              onClick={() => setActive(filter)}
-              className={cn(
-                "relative z-10 rounded-full px-4 py-2.5 text-sm font-medium transition-colors",
-                isActive ? "text-surface" : "text-muted hover:text-ink",
-              )}
-            >
-              {filter}
-            </button>
-          );
-        })}
+        <div className="flex w-max gap-1 rounded-[1.75rem] border border-line bg-surface p-1.5 shadow-card">
+          {FILTERS.map((filter) => {
+            const isActive = filter === active;
+            return (
+              <button
+                key={filter}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActive(filter)}
+                className={cn(
+                  "whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-medium",
+                  "transition-colors duration-200",
+                  isActive
+                    ? "bg-ink text-surface"
+                    : "text-muted hover:bg-band hover:text-ink",
+                )}
+              >
+                {filter}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div
@@ -89,12 +75,6 @@ export function Gallery() {
           />
         ))}
       </div>
-
-      {visible.length === 0 ? (
-        <p className="mt-12 text-muted">
-          Nothing published under that service yet. Everything else is above.
-        </p>
-      ) : null}
     </>
   );
 }
