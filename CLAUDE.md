@@ -2,8 +2,9 @@
 
 Marketing site for FrameWell, a SaaS animation and development studio.
 Next.js 15 App Router, TypeScript strict, Tailwind 4. Static export only.
-No animation library: every effect is CSS, driven where needed by a small
-IntersectionObserver or a throttled scroll listener.
+Motion (framer-motion) is available, but CSS is the default — see the
+animation rules below. That split is deliberate: it keeps the hero and
+everything above the fold free of JavaScript.
 
 ## Hard rules
 
@@ -18,9 +19,18 @@ IntersectionObserver or a throttled scroll listener.
   a page or layout file.
 - Animate only transform and opacity.
 - All animation timing comes from `lib/motion.ts`. No inline durations.
-- Do not add an animation library. If an effect seems to need one, it
-  almost certainly does not — check how Reveal, ContainerScroll and
-  AnimatedBeam do it first.
+- CSS first, Motion second. Reach for Motion only when CSS genuinely
+  cannot do it: scroll-linked progress, spring physics, shared layout
+  (`layout` / `layoutId`), exit animations, drag, or gesture values fed
+  into style. A fade, a rise, a loop or a hover is CSS — use `<Reveal>`,
+  `<Stagger>` or a keyframe, not Motion.
+- Import Motion from `@/components/motion/m`, never from `motion/react`
+  directly. That file re-exports the lazy `m` component set so we ship
+  the small feature bundle, and it is the one place to audit usage.
+- Any file importing Motion is `"use client"` and must sit below the
+  fold. Motion must never appear in the bundle the hero needs (M-04).
+- Wrap a Motion tree in `<MotionConfig reducedMotion="user">` at the
+  section root, or read `usePrefersReducedMotion` yourself.
 - Scroll entrances use `<Reveal>`. Never write an IntersectionObserver
   in a section file.
 - Every animation respects `usePrefersReducedMotion`.

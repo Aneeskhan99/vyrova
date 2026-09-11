@@ -16,6 +16,13 @@
   --color-accent-soft: #e0f3f5;
   --color-cyan: #22e5f0;
 
+  /* The four project phases on /process. Named by role, not by hue, so
+     re-tinting a phase is one edit here. */
+  --color-phase-setup: #22c3e0;
+  --color-phase-approve: #5b6ef5;
+  --color-phase-build: #10b981;
+  --color-phase-ship: #0d1219;
+
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
 
   --radius-card: 1.25rem;
@@ -164,6 +171,33 @@
   to { transform: translateX(220%); }
 }
 
+/* Ripple rings behind the process hero. The centring translate has to
+   appear in BOTH ends of the keyframe or the ring snaps to the corner. */
+@keyframes fw-ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+}
+.fw-ripple {
+  transform: translate(-50%, -50%);
+  animation: fw-ripple 7s ease-in-out infinite;
+}
+
+/* Slow vertical drift for the tool pills. */
+@keyframes fw-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.fw-float {
+  animation: fw-float 5s ease-in-out infinite;
+}
+
 /* ---------------------------------------------------------------
    M-06: anything inside a paused wrapper stops when off-screen.
    --------------------------------------------------------------- */
@@ -188,6 +222,8 @@
   .fw-tilt:hover { transform: none; }
   .fw-scroll-tilt-inner { transform: none; }
   .fw-beam-dash { animation: none; opacity: 0.45; }
+  .fw-ripple,
+  .fw-float { animation: none; }
   *,
   *::before,
   *::after {
