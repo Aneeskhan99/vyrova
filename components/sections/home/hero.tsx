@@ -154,7 +154,7 @@ function OrbitLogo({
   scale?: number;
 }) {
   const tile = size === "lg" ? 72 : 60;
-  const mark = Math.round((size === "lg" ? 30 : 25) * scale);
+  const mark = Math.round((size === "lg" ? 32 : 27) * scale);
 
   return (
     <span

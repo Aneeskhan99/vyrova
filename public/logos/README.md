@@ -1,27 +1,37 @@
 # Tool logos for the hero orbit
 
-Every `.svg` in this folder is a **placeholder** I drew — a generic glyph,
-not a brand mark. The site renders whatever file sits at each filename, so
-replacing a logo is a straight file swap. Nothing in the code changes.
+The site renders whatever `.svg` sits at each filename below, so changing a
+logo is a straight file swap — no code edit.
 
-## How to swap one in
+## Getting the real, full-colour logos
 
-1. Download the official SVG for the tool.
-2. Save it over the file of the same name in this folder.
-3. Refresh. That's it.
+Run **`Get FrameWell Logos.bat`** on the Desktop. It downloads all six in
+one go: full colour from Devicon where available, and Simple Icons with the
+brand's own hex applied as a fallback. Nothing is installed, and it can be
+re-run any time.
 
-| File                | Tool             | Where to get the official SVG |
-| ------------------- | ---------------- | ----------------------------- |
-| `figma.svg`         | Figma            | Figma's brand/press page, or simpleicons.org |
-| `after-effects.svg` | Adobe After Effects | Adobe brand portal — see the note below |
-| `rive.svg`          | Rive             | rive.app brand assets, or simpleicons.org |
-| `wordpress.svg`     | WordPress        | wordpress.org/about/logos — freely licensed |
-| `nextjs.svg`        | Next.js          | nextjs.org, or the Vercel design resources page |
-| `resolve.svg`       | DaVinci Resolve  | Blackmagic Design's brand/press kit |
+It has to run on Windows rather than from Claude, because neither the cloud
+sandbox nor the Linux bridge is allowed out to a CDN.
 
-**simpleicons.org** is the fastest route for most of these: search the
-tool, download the SVG, done. The paths there are CC0, and each icon page
-links out to that brand's own usage guidelines.
+Until it runs, the files here are **placeholders** — generic glyphs, not
+brand marks — so the page is never broken.
+
+| File                | Tool                |
+| ------------------- | ------------------- |
+| `figma.svg`         | Figma               |
+| `after-effects.svg` | Adobe After Effects |
+| `premiere.svg`      | Adobe Premiere Pro  |
+| `wordpress.svg`     | WordPress           |
+| `nextjs.svg`        | Next.js             |
+| `react.svg`         | React               |
+
+`rive.svg` and `resolve.svg` are left over from an earlier set and are not
+used. Rive and DaVinci Resolve have no reliable full-colour SVG on either
+source; to feature them, download from rive.app and Blackmagic's press kit
+by hand and add them back in `content/site/home.ts`.
+
+To swap a single logo by hand instead: download the official SVG, save it
+over the file of the same name here, refresh.
 
 ## Two things to get right before launch
 

@@ -28,10 +28,10 @@ export const hero = {
   orbit: [
     { label: "Figma", file: "figma", ring: "inner", scale: 1 },
     { label: "After Effects", file: "after-effects", ring: "inner", scale: 1 },
-    { label: "Rive", file: "rive", ring: "inner", scale: 1 },
+    { label: "Premiere Pro", file: "premiere", ring: "inner", scale: 1 },
     { label: "WordPress", file: "wordpress", ring: "outer", scale: 1 },
-    { label: "Next.js", file: "nextjs", ring: "outer", scale: 1 },
-    { label: "DaVinci Resolve", file: "resolve", ring: "outer", scale: 1 },
+    { label: "Next.js", file: "nextjs", ring: "outer", scale: 0.88 },
+    { label: "React", file: "react", ring: "outer", scale: 1.05 },
   ],
 } as const;
 
