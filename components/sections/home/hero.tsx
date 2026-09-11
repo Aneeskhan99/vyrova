@@ -58,16 +58,14 @@ export function Hero() {
         <div className="grid items-center gap-14 py-20 lg:grid-cols-[minmax(0,1fr)_420px] lg:py-28">
           <div className="flex flex-col items-start gap-7">
             <h1 className="fw-rise text-[clamp(2.25rem,4.8vw,3.5rem)] font-bold leading-[1.05] tracking-[-0.035em]">
-              {/* One line on desktop: "We [verb] software". It wraps only
-                  when the viewport is too narrow to hold it. */}
-              <span className="flex flex-wrap items-center gap-x-4 gap-y-2 lg:flex-nowrap">
-                <span>{hero.headlineBefore}</span>
-                <span className="rounded-2xl border border-accent/40 bg-cyan/20 px-4 pb-1 text-accent">
-                  <WordRotate words={hero.rotatingWords} />
-                </span>
-                <span>{hero.headlineAfter}</span>
+              {/* Ordinary inline text with real spaces, so the word after
+                  the rotating one moves with it as it changes width. */}
+              <span className="relative block">
+                {hero.headlineBefore}{" "}
+                <WordRotate words={hero.rotatingWords} className="text-accent" />{" "}
+                {hero.headlineAfter}
               </span>
-              <span className="mt-1 block">{hero.headlineSecondLine}</span>
+              <span className="block">{hero.headlineSecondLine}</span>
             </h1>
 
             <p className="fw-rise fw-d1 max-w-[46ch] text-lg leading-relaxed text-muted">
