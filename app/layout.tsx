@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: `%s — ${SITE.name}`,
   },
   description:
-    "FrameWell animates SaaS products and builds the sites and software around them. Product films, feature clips, WordPress, custom development and video editing.",
+    "VYROVA designs and animates the things a product needs to be seen: website UI/UX, brand identity, SaaS animation, explainer films, WordPress, software and video editing. Dubai and Pakistan.",
 };
 
 export default function RootLayout({
@@ -33,6 +33,8 @@ export default function RootLayout({
         <noscript>
           <style>{`.fw-reveal{opacity:1;transform:none}`}</style>
         </noscript>
+        {/* The mark is on every page above the fold: fetch it first. */}
+        <link rel="preload" as="image" href="/brand/vyrova-mark.webp" type="image/webp" />
       </head>
       {/*
         Browser extensions such as Grammarly and ColorZilla add attributes

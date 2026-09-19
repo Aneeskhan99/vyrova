@@ -5,16 +5,17 @@
 
 export const hero = {
   headlineBefore: "We",
-  rotatingWords: ["animate", "launch", "explain", "build"],
-  headlineAfter: "software",
-  headlineSecondLine: "so it sells itself.",
+  rotatingWords: ["design", "animate", "launch", "build"],
+  headlineAfter: "software so",
+  headlineSecondLine: "it sells itself.",
   subhead:
-    "SaaS animation, explainer videos, WordPress and custom software, from one studio that treats motion as the product.",
+    "Website UI/UX, brand identity, SaaS animation, explainer films, WordPress and custom software, from one studio that treats motion as the product.",
   primaryCta: { label: "Start a project", href: "#contact" },
   secondaryCta: { label: "Watch the showreel", href: "#showcase" },
+  scrollCue: "Scroll",
   stats: [
-    { value: 120, suffix: "+", label: "products animated" },
-    { value: 5, suffix: "", label: "services, one studio" },
+    { value: 15, suffix: "", label: "websites designed and delivered" },
+    { value: 7, suffix: "", label: "services, one studio" },
     { value: 48, suffix: "h", label: "first cut turnaround" },
   ],
   /**
@@ -36,61 +37,101 @@ export const hero = {
 } as const;
 
 export const logos = {
-  title: "Trusted by product teams at",
-  names: ["Nimbus", "Ledgerly", "Orbitals", "Quanta", "Hexa", "Northwind", "Pulse"],
+  eyebrow: "Clients",
+  title: "Fifteen brands, one studio.",
+  note: "Every logo below belongs to a company whose website we designed.",
 } as const;
 
 export const services = {
   eyebrow: "Services",
-  title: "Five services.\nOne motion-first studio.",
-  intro:
-    "Everything a software company needs to look as sharp as it ships, without juggling five vendors.",
+  title: "Seven services. One motion-first studio.",
+  open: "See the service",
+  countLabel: "of",
   items: [
     {
       title: "SaaS animation",
       body: "Product UI brought to life: feature launches, onboarding flows and dashboards animated so they explain themselves in seconds.",
       featured: true,
+      visual: null,
+      videoSrc: null,
     },
     {
       title: "Explainer videos",
       body: "Script, voice, storyboard and animation for a 60 to 90 second story that sells the product.",
       featured: false,
+      visual: "story",
+      videoSrc: "/videos/saas-explanation-uber.mp4",
     },
     {
       title: "WordPress development",
       body: "Fast, custom-built marketing sites and stores. No bloated themes.",
       featured: false,
+      visual: null,
+      videoSrc: "/videos/wordpress-built-on-wordpress.mp4",
     },
     {
       title: "Software development",
       body: "Web apps, internal tools and integrations built to spec.",
       featured: false,
+      visual: "code",
+      videoSrc: "/videos/vyrova-showreel.mp4",
     },
     {
       title: "Video editing",
       body: "Cutdowns, social edits and polish for content you already shoot.",
       featured: false,
+      visual: "edit",
+      videoSrc: "/videos/same-footage-two-cuts.mp4",
+    },
+    {
+      title: "Website UI/UX design",
+      body: "Full sites designed in Figma, page by page, ready for build. Fifteen delivered so far.",
+      featured: false,
+      visual: "design",
+      videoSrc: null,
+      image: "/work/design/novikov-cover.webp",
+    },
+    {
+      title: "Brand & social graphics",
+      body: "Identity systems and the post, story and ad templates that carry them every day.",
+      featured: false,
+      visual: "brand",
+      videoSrc: null,
+      image: "/work/design/yellow-lockers-cover.webp",
     },
   ],
 } as const;
 
 export const integrations = {
   eyebrow: "How we plug in",
+  showAll: "Show everything we take and hand back",
+  showLess: "Show less",
   title: "Your tools in, finished work out.",
   intro:
     "Send us what you already have. You get back a kit, not a single file.",
   inputs: [
-    { label: "Figma", note: "design files" },
-    { label: "Screenshots", note: "of your product" },
-    { label: "A Loom", note: "or a call" },
-    { label: "Brand kit", note: "fonts and colours" },
+    { label: "Figma", note: "design files", icon: "/logos/figma.svg" },
+    { label: "Screenshots", note: "of your product", icon: "/icons/framed-picture.svg" },
+    { label: "A Loom", note: "or a call", icon: "/logos/loom.svg" },
+    { label: "Brand kit", note: "fonts and colours", icon: "/icons/artist-palette.svg" },
   ],
   outputs: [
-    { label: "Product film", note: "60 to 90s" },
-    { label: "SaaS animation", note: "feature clips" },
-    { label: "Website", note: "WordPress or custom" },
-    { label: "Cutdowns", note: "social and ads" },
+    { label: "Product film", note: "60 to 90s", icon: "/icons/clapper-board.svg" },
+    { label: "SaaS animation", note: "feature clips", icon: "/icons/sparkles.svg" },
+    { label: "Website", note: "WordPress or custom", icon: "/icons/globe.svg" },
+    { label: "Cutdowns", note: "social and ads", icon: "/icons/scissors.svg" },
   ],
+  /** The pipeline log that types itself under the hub. One honest job. */
+  log: {
+    title: "vyrova — job log",
+    lines: [
+      { verb: "received", rest: "figma file · 14 frames · brand kit" },
+      { verb: "storyboard", rest: "11 scenes, timed to a 92s voiceover" },
+      { verb: "rendering", rest: "1080p · 30 fps · sound designed" },
+      { verb: "exporting", rest: "hero loop · 6 feature clips · 9:16 cutdowns" },
+      { verb: "delivered", rest: "the kit, first cut in 48 hours" },
+    ],
+  },
 } as const;
 
 export const showcase = {
@@ -98,6 +139,7 @@ export const showcase = {
   title: "Scroll, and the screen tilts up on your product.",
   intro:
     "The section you are looking at is the service. If a studio cannot make its own site move, be suspicious of the reel.",
+  screenLabel: "What Stripe charges · 60s SaaS animation",
   captions: [
     { title: "Feature launches", note: "30 to 60s, motion-led" },
     { title: "Onboarding flows", note: "Step-by-step UI animation" },
@@ -107,26 +149,80 @@ export const showcase = {
 
 export const work = {
   eyebrow: "Selected work",
-  title: "Rows drift as you scroll.",
-  intro: "Eight of the last forty eight. Hover any card to play it.",
+  title: "Scroll down. The shelf slides across.",
+  intro: "Films we made and sites we designed. Hover a film to play it; click a design to open it.",
   cta: { label: "See all work", href: "/work" },
+  counterOf: "of",
   rowOne: [
-    { name: "Ledgerly", note: "SaaS animation · feature launch", category: "SaaS animation" },
-    { name: "Nimbus", note: "Product film · 75s", category: "Explainer" },
-    { name: "Orbitals", note: "WordPress site + explainer", category: "WordPress" },
-    { name: "Quanta", note: "Onboarding flow animation", category: "SaaS animation" },
+    {
+      name: "How Stripe Makes Money",
+      note: "SaaS animation · sample explainer",
+      category: "SaaS animation",
+      videoSrc: "/videos/saas-animation-stripe.mp4",
+    },
+    {
+      name: "VYROVA Showreel",
+      note: "SaaS animation · our own reel",
+      category: "SaaS animation",
+      videoSrc: "/videos/vyrova-showreel.mp4",
+    },
+    {
+      name: "Built On WordPress",
+      note: "WordPress · sample explainer",
+      category: "WordPress",
+      videoSrc: "/videos/wordpress-built-on-wordpress.mp4",
+    },
+    {
+      name: "Novikov",
+      note: "Website UI/UX · restaurant, Miami",
+      category: "Website UI/UX",
+      videoSrc: null,
+      image: "/work/design/novikov-cover.webp",
+      href: "/work/novikov/",
+      internal: true,
+      tint: "#b08d57",
+    },
   ],
   rowTwo: [
-    { name: "Hexa", note: "Dashboard walkthrough", category: "Explainer" },
-    { name: "Northwind", note: "Custom web app + edits", category: "Software" },
-    { name: "Pulse", note: "30 social cutdowns", category: "Editing" },
-    { name: "Atlas", note: "Explainer video · 60s", category: "Explainer" },
+    {
+      name: "JAPANOS",
+      note: "Website UI/UX · restaurant, Dubai",
+      category: "Website UI/UX",
+      videoSrc: null,
+      image: "/work/design/japanos-cover.webp",
+      href: "/work/japanos/",
+      internal: true,
+      tint: "#fc821a",
+    },
+    {
+      name: "Yellow Lockers",
+      note: "Website UI/UX · luggage storage, Corfu",
+      category: "Website UI/UX",
+      videoSrc: null,
+      image: "/work/design/yellow-lockers-cover.webp",
+      href: "/work/yellow-lockers/",
+      internal: true,
+      tint: "#41bc9f",
+    },
+    {
+      name: "Same Footage, Two Cuts",
+      note: "Editing · our own film",
+      category: "Editing",
+      videoSrc: "/videos/same-footage-two-cuts.mp4",
+    },
+    {
+      name: "How Uber Works",
+      note: "Explainer · sample video",
+      category: "Explainer",
+      videoSrc: "/videos/saas-explanation-uber.mp4",
+    },
   ],
 } as const;
 
 export const process = {
   eyebrow: "Process",
   title: "From brief to first cut in 48 hours.",
+  hint: "Hover a step to turn it over.",
   steps: [
     {
       number: "01",
@@ -134,6 +230,8 @@ export const process = {
       day: "Day 1",
       title: "Brief",
       body: "A 30 minute call. We learn the product, the audience and the one thing the video must make people feel.",
+      outcome: "A one-page brief you sign off",
+      backNote: "What you get",
     },
     {
       number: "02",
@@ -141,6 +239,8 @@ export const process = {
       day: "Day 1 to 3",
       title: "Script + board",
       body: "Script, voice direction and a storyboard you approve before a single frame moves.",
+      outcome: "Script, voice sample and storyboard PDF",
+      backNote: "What you get",
     },
     {
       number: "03",
@@ -148,6 +248,8 @@ export const process = {
       day: "Day 3 to 9",
       title: "Animate",
       body: "UI recreated at pixel level, then animated with real easing, depth and sound.",
+      outcome: "First cut within 48 hours of sign off",
+      backNote: "What you get",
     },
     {
       number: "04",
@@ -155,6 +257,8 @@ export const process = {
       day: "Day 10",
       title: "Deliver",
       body: "Master file plus cutdowns for web, social and sales decks. Revisions included.",
+      outcome: "Master, cutdowns, source files, full rights",
+      backNote: "What you get",
     },
   ],
 } as const;
@@ -192,8 +296,15 @@ export const testimonials = {
 
 export const faq = {
   eyebrow: "FAQ",
-  title: "Questions we get\nbefore every project.",
-  intro: "Anything else, the form below goes straight to a human.",
+  title: "Questions we get before\nevery project.",
+  intro: "Pick a question and watch it answered. Anything else, the form below goes straight to a human.",
+  chat: {
+    title: "VYROVA",
+    status: "Scripted answers · a human reads the form",
+    you: "You",
+    prompt: "Ask one",
+    typing: "typing",
+  },
   items: [
     {
       q: "How long does a SaaS animation take?",
@@ -221,6 +332,4 @@ export const faq = {
 export const cta = {
   title: "Let's make your product\nimpossible to scroll past.",
   body: "Tell us what you are launching. You get a scoped plan and a price within one business day.",
-  primary: { label: "Start a project", href: "mailto:hello@framewell.com" },
-  secondary: { label: "hello@framewell.com", href: "mailto:hello@framewell.com" },
 } as const;

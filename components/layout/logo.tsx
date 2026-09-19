@@ -1,15 +1,30 @@
+import { Mark, Wordmark } from "@/components/brand/mark";
 import { cn } from "@/lib/utils";
 
 /**
- * Placeholder wordmark. The real logo has not been designed yet —
- * replace the square with the final mark and keep the same footprint so
- * nothing in the nav or footer needs to move.
+ * The VYROVA lockup. Mark left, outlined wordmark right, cap height tied to
+ * the mark's optical centre. Fully inline SVG, so the header never waits on
+ * a font or an image request.
+ *
+ * `fw-vt-logo` gives the lockup a view-transition-name: with cross-document
+ * view transitions on, the logo holds still while the rest of the page
+ * changes underneath it.
  */
-export function Logo({ className }: { className?: string }) {
+export function Logo({
+  className,
+  animate = false,
+  id = "logo",
+}: {
+  className?: string;
+  animate?: boolean;
+  id?: string;
+}) {
   return (
-    <span className={cn("inline-flex items-center gap-2.5", className)}>
-      <span aria-hidden="true" className="size-7 rounded-lg bg-cyan" />
-      <span className="text-[1.0625rem] font-bold tracking-tight">FrameWell</span>
+    <span
+      className={cn("fw-vt-logo inline-flex items-center gap-2.5", className)}
+    >
+      <Mark id={id} animate={animate} priority className="size-9" />
+      <Wordmark className="h-[0.8125rem] text-ink" />
     </span>
   );
 }

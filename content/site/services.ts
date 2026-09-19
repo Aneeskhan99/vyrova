@@ -7,10 +7,24 @@
 export const hero = {
   eyebrow: "Services",
   before: "One studio for",
-  rotatingWords: ["motion", "websites", "software", "video"],
+  rotatingWords: ["design", "motion", "websites", "software", "video"],
   after: "and everything around it.",
   intro:
-    "Five services that share one motion system, so your video, your website and your product all feel like the same company.",
+    "Seven services that share one design system, so your site, your video, your brand and your product all feel like the same company."
+} as const;
+
+/** The editor shown for software development: it types itself. */
+export const codeSample = {
+  file: "quote.ts",
+  status: "Build passed · deployed",
+  lines: [
+    "export async function quote(brief: Brief) {",
+    "  const scope = await plan(brief);",
+    "  const price = estimate(scope);",
+    "  const eta = firstCutIn(48, \"hours\");",
+    "  return deliver({ scope, price, eta });",
+    "}",
+  ],
 } as const;
 
 export const items = [
@@ -27,6 +41,7 @@ export const items = [
       "App store and website loops",
     ],
     visual: "ui",
+    videoSrc: "/videos/vyrova-showreel.mp4",
   },
   {
     number: "02",
@@ -41,6 +56,7 @@ export const items = [
       "Cutdowns for ads",
     ],
     visual: "story",
+    videoSrc: "/videos/saas-animation-stripe.mp4",
   },
   {
     number: "03",
@@ -55,6 +71,7 @@ export const items = [
       "CMS training for your team",
     ],
     visual: "web",
+    videoSrc: "/videos/wordpress-built-on-wordpress.mp4",
   },
   {
     number: "04",
@@ -69,6 +86,7 @@ export const items = [
       "Maintenance retainers",
     ],
     visual: "code",
+    videoSrc: null,
   },
   {
     number: "05",
@@ -83,6 +101,39 @@ export const items = [
       "Monthly retainers",
     ],
     visual: "edit",
+    videoSrc: "/videos/same-footage-two-cuts.mp4",
+  },
+  {
+    number: "06",
+    icon: "design",
+    name: "Website UI/UX design",
+    headline: "Every page designed before a line is built",
+    body: "Full websites designed in Figma, page by page, at real content length. Fifteen delivered to clients across hospitality, e-commerce, services and community organisations.",
+    bullets: [
+      "Full-length page designs in Figma",
+      "Desktop and mobile layouts",
+      "Component library for the build",
+      "Handover to WordPress or custom code",
+    ],
+    visual: "design",
+    videoSrc: null,
+    image: "/work/design/novikov-cover.webp",
+  },
+  {
+    number: "07",
+    icon: "brand",
+    name: "Brand & social graphics",
+    headline: "An identity, and the templates that keep it alive",
+    body: "Logo and identity systems, then the post, story and ad templates your team uses every day so the brand looks the same on the tenth week as the first.",
+    bullets: [
+      "Logo and visual identity",
+      "Brand guidelines",
+      "Social post and story templates",
+      "Campaign and ad creative",
+    ],
+    visual: "brand",
+    videoSrc: null,
+    image: "/work/design/yellow-lockers-cover.webp",
   },
 ] as const;
 
@@ -90,7 +141,11 @@ export const deliverables = {
   eyebrow: "Flagship · SaaS animation",
   title: "What lands in your inbox.",
   intro:
-    "Every SaaS animation project ships as a kit, not a single file. The list appears one item at a time as you reach it.",
+    "Every SaaS animation project ships as a kit, not a single file. Scroll, and the kit unpacks in front of you.",
+  inboxTitle: "Delivery",
+  inboxNote: "6 files · one link",
+  delivered: "Delivered",
+  kinds: ["MP4", "MP4 ×6", "WEBM", "MP4 · SRT", "AEP · FIG", "PDF"],
   formats: [
     "16:9 web",
     "9:16 social",
@@ -114,6 +169,8 @@ export const packages = {
   title: "Three ways in.",
   intro:
     "Fixed scope for one thing, a launch bundle, or a monthly retainer for teams that ship every week.",
+  badge: "Most teams start here",
+  spotlightHint: "Move your cursor across the cards",
   plans: [
     {
       name: "Single",
@@ -156,6 +213,8 @@ export const packages = {
 
 export const comparison = {
   title: "Versus the other options.",
+  intro: "Five things that decide whether a launch is calm or chaotic.",
+  scoreLabel: "out of 5",
   columns: ["Freelancers", "In house", "Us"],
   rows: [
     { label: "Video, web and software in one place", values: ["✕", "Maybe", "✓"] },

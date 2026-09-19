@@ -2,7 +2,7 @@
  * All About page copy (C-01).
  *
  * ⚠ NEEDS ASIM'S SIGN OFF BEFORE LAUNCH (C-04).
- * The founding story below says FrameWell grew out of an in-house team
+ * The founding story below says VYROVA grew out of an in-house team
  * built for the group's own computer and ITAD businesses. That is the
  * angle I was told about but never got confirmed — correct it or cut it.
  * Every number in `numbers` is illustrative. Replace with real counts or
@@ -13,12 +13,19 @@ export const hero = {
   eyebrow: "About",
   title: "We built this studio\nfor our own products first.",
   intro:
-    "FrameWell started as the in-house team for a group of computer and ITAD businesses. Websites, software and product videos, all made for our own companies, where a bad result costs us rather than a client. We opened it up because the work kept getting asked for.",
+    "VYROVA started as the in-house team for a group of computer and ITAD businesses. Websites, software and product videos, all made for our own companies, where a bad result costs us rather than a client. We opened it up because the work kept getting asked for.",
+} as const;
+
+export const storyLabels = {
+  chapterOf: "of",
+  scrollHint: "Scroll to turn the page",
+  indexTitle: "The chapters",
+  reading: "Reading",
 } as const;
 
 export const story = {
   eyebrow: "How we got here",
-  title: "Four things that shaped the studio.",
+  title: "Four things that shaped\nthe studio.",
   chapters: [
     {
       marker: "01",
@@ -82,15 +89,17 @@ export const principles = {
 
 export const team = {
   eyebrow: "The team",
+  showAll: "See all six disciplines",
+  showLess: "Show less",
   title: "Nine people, five disciplines.",
   intro:
     "Small enough that the person who animated your video is the person who answers your email about it.",
   roles: [
-    { role: "Motion direction", discipline: "Animation", icon: "clapper" },
-    { role: "UI and brand design", discipline: "Design", icon: "pen" },
-    { role: "Front end and product", discipline: "Engineering", icon: "code" },
-    { role: "Script and narrative", discipline: "Writing", icon: "text" },
-    { role: "Sound and voice", discipline: "Audio", icon: "mic" },
+    { role: "Motion direction", discipline: "Animation", icon: "clapper-board" },
+    { role: "UI and brand design", discipline: "Design", icon: "artist-palette" },
+    { role: "Front end and product", discipline: "Engineering", icon: "laptop" },
+    { role: "Script and narrative", discipline: "Writing", icon: "memo" },
+    { role: "Sound and voice", discipline: "Audio", icon: "microphone" },
     { role: "Edit and finishing", discipline: "Video", icon: "scissors" },
   ],
 } as const;
@@ -105,9 +114,17 @@ export const studio = {
     { city: "London", zone: "Europe/London", home: false },
     { city: "New York", zone: "America/New_York", home: false },
   ],
+  overlap: {
+    title: "When our day overlaps yours",
+    ours: "Our day",
+    note: "09:00 to 18:00 Dubai, drawn in each city's local time",
+    /** Working window in Dubai, and each city's offset from Dubai in hours (winter). */
+    start: 9,
+    end: 18,
+    offsets: [0, -4, -9],
+  },
   facts: [
-    { label: "Based in", value: "Dubai, UAE" },
-    { label: "Working hours", value: "09:00 to 18:00 GST" },
+    { label: "Based in", value: "Dubai, UK and US" },
     { label: "Reply window", value: "Within one working day" },
   ],
 } as const;

@@ -12,6 +12,26 @@ export const hero = {
   primary: { label: "Start a project", href: "#contact" },
   secondary: { label: "See the packages", href: "/services#packages" },
   counter: { value: 48, suffix: "h", label: "to first cut" },
+  /** The two floating cards either side of the heading. */
+  monday: {
+    day: "Mon",
+    label: "Brief call",
+    time: "30 min",
+    items: ["Product walkthrough", "Audience and goal", "Brand kit in"],
+  },
+  wednesday: {
+    day: "Wed",
+    label: "First cut",
+    time: "00:48",
+    note: "Sent for review",
+  },
+  route: ["Mon", "Tue", "Wed"],
+} as const;
+
+/** Labels on the step cards. */
+export const stepLabels = {
+  done: "Done",
+  dayOf: "of 10 days",
 } as const;
 
 export const steps = [
@@ -89,28 +109,31 @@ export const tools = {
   title: "Your stack, our stack, one pipeline.",
   intro:
     "Design in Figma, animate in After Effects and Rive, edit in Resolve, ship in Next.js or WordPress. Everything versioned, everything handed over at the end.",
-  names: [
-    "Figma",
-    "After Effects",
-    "Rive",
-    "Lottie",
-    "Resolve",
-    "Premiere",
-    "Next.js",
-    "React",
-    "Tailwind",
-    "WordPress",
-    "Python",
-    "Postgres",
-    "Vercel",
-    "GitHub",
-    "Notion",
-    "Loom",
+  items: [
+    { name: "Figma", file: "figma" },
+    { name: "After Effects", file: "after-effects" },
+    { name: "Rive", file: "rive" },
+    { name: "Lottie", file: "lottie" },
+    { name: "Resolve", file: "resolve" },
+    { name: "Premiere", file: "premiere" },
+    { name: "Next.js", file: "nextjs" },
+    { name: "React", file: "react" },
+    { name: "Tailwind", file: "tailwind" },
+    { name: "WordPress", file: "wordpress" },
+    { name: "Python", file: "python" },
+    { name: "Postgres", file: "postgres" },
+    { name: "Vercel", file: "vercel" },
+    { name: "GitHub", file: "github" },
+    { name: "Notion", file: "notion" },
+    { name: "Loom", file: "loom" },
   ],
 } as const;
 
 export const guarantees = {
   title: "Three promises, in writing.",
+  intro: "Not a slide. A clause in every contract we send.",
+  stamp: "In writing",
+  signed: "Signed, VYROVA",
   items: [
     {
       value: "48h",

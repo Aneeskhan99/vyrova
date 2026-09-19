@@ -24,8 +24,14 @@ export function Detail() {
                 i === 0 && "border-t-0",
               )}
             >
-              <Reveal className={cn(flipped && "lg:order-2")}>
-                <div className="flex flex-col gap-5">
+              <Reveal className={cn("relative", flipped && "lg:order-2")}>
+                <span
+                  aria-hidden="true"
+                  className="fw-svc-num pointer-events-none absolute -left-4 -top-14 select-none text-[10rem] font-bold leading-none tracking-[-0.06em] lg:text-[13rem]"
+                >
+                  {service.number}
+                </span>
+                <div className="relative flex flex-col gap-5">
                   <p className="text-xs font-medium uppercase tracking-[0.14em] text-accent">
                     {service.number} · {service.name}
                   </p>
@@ -58,8 +64,12 @@ export function Detail() {
                 </div>
               </Reveal>
 
-              <Reveal className={cn(flipped && "lg:order-1")}>
-                <ServiceVisual kind={service.visual} />
+              <Reveal className={cn("fw-svc-visual", flipped && "lg:order-1")}>
+                <ServiceVisual
+                  kind={service.visual}
+                  videoSrc={service.videoSrc}
+                  image={"image" in service ? service.image : null}
+                />
               </Reveal>
             </article>
           );

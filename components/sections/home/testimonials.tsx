@@ -14,7 +14,7 @@ export function Testimonials() {
             <p className="text-xs font-medium uppercase tracking-[0.16em] text-accent">
               {testimonials.eyebrow}
             </p>
-            <h2 className="text-[clamp(1.875rem,3.8vw,3rem)] font-bold tracking-[-0.025em]">
+            <h2 className="text-[clamp(1.625rem,2.9vw,2.5rem)] font-bold tracking-[-0.025em]">
               {testimonials.title}
             </h2>
           </div>

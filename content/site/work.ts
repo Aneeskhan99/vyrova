@@ -8,13 +8,29 @@
 
 export const hero = {
   eyebrow: "Selected work",
-  title: "Products we made\nimpossible to scroll past.",
+  title: "Products we made impossible to scroll past.",
   intro:
-    "Forty eight projects across SaaS animation, explainer video, WordPress, custom software and editing. Filter by service, or just scroll.",
+    "Fifteen websites designed and delivered to clients, one built end to end, and the films we make to show how we work. Every design opens full length."
+} as const;
+
+/** Labels on the project cards' hover state. */
+export const cardLabels = {
+  openInternal: "Open project",
+  openExternal: "Open live site",
+  play: "Hover to play",
+} as const;
+
+/** The cover-flow carousel under the filter tabs. */
+export const flow = {
+  prev: "Previous",
+  next: "Next",
+  of: "of",
+  hint: "Scroll sideways, use the arrows, or swipe",
 } as const;
 
 export const FILTERS = [
   "All",
+  "Website UI/UX",
   "SaaS animation",
   "Explainer",
   "WordPress",
@@ -22,52 +38,145 @@ export const FILTERS = [
   "Editing",
 ] as const;
 
+/** `?filter=<key>` in the URL preselects a tab. */
+export const FILTER_QUERY = {
+  design: "Website UI/UX",
+  animation: "SaaS animation",
+  explainer: "Explainer",
+  wordpress: "WordPress",
+  software: "Software",
+  editing: "Editing",
+} as const satisfies Record<string, (typeof FILTERS)[number]>;
+
 export const featured = {
-  name: "Ledgerly",
+  name: "VYROVA Showreel",
   tags: ["SaaS animation", "Product film"],
-  body: "A 75 second launch film plus six feature clips for a finance dashboard, delivered in 12 days.",
+  body: "Our own reel. Fifty three seconds of kinetic typography, live interface animation and 2.5D product motion, every frame drawn in code.",
+  // Real numbers about the film itself, not invented client results.
   stats: [
-    { value: 38, prefix: "+", suffix: "%", decimals: 0, label: "trial signups" },
-    { value: 2.4, prefix: "", suffix: "M", decimals: 1, label: "video views" },
-    { value: 12, prefix: "", suffix: "", decimals: 0, label: "days to deliver" },
+    { value: 53, prefix: "", suffix: "s", decimals: 0, label: "run time" },
+    { value: 10, prefix: "", suffix: "", decimals: 0, label: "scenes" },
+    { value: 1080, prefix: "", suffix: "p", decimals: 0, label: "at 30 fps" },
   ],
-  cta: { label: "View case study", href: "/work" },
+  videoSrc: "/videos/vyrova-showreel.mp4",
+  cta: { label: "See how we work", href: "/process" },
+  eyebrow: "Our own reel",
+  /** The ten scenes of the finished cut, in seconds. Click one to jump. */
+  scenes: [
+    { at: 0, label: "Hook", line: "Your software deserves more." },
+    { at: 5.5, label: "Promise", line: "Complex software, clear visuals." },
+    { at: 9, label: "Product animation", line: "A dashboard, moving." },
+    { at: 14.5, label: "Systems", line: "Make complex systems simple." },
+    { at: 20.5, label: "Complex to clear", line: "Nine windows become one." },
+    { at: 27, label: "Business", line: "Built for the way business moves." },
+    { at: 34, label: "Idea to experience", line: "From idea to experience." },
+    { at: 40, label: "Services", line: "SaaS, AI, web, product, explainer." },
+    { at: 46, label: "Payoff", line: "We make software amazing." },
+    { at: 50, label: "End card", line: "Let's build something worth watching." },
+  ],
+  controls: {
+    play: "Play",
+    pause: "Pause",
+    unmute: "Sound on",
+    mute: "Sound off",
+    scenesLabel: "Scenes",
+    sceneHint: "Click a frame to jump",
+  },
 } as const;
 
 export const projects = [
-  { name: "Nimbus", note: "Product film · 75s", category: "Explainer" },
-  { name: "Orbitals", note: "Marketing site + explainer", category: "WordPress" },
-  { name: "Quanta", note: "Onboarding flow animation", category: "SaaS animation" },
-  { name: "Hexa", note: "Dashboard walkthrough", category: "Explainer" },
-  { name: "Northwind", note: "Internal tool + edits", category: "Software" },
-  { name: "Pulse", note: "30 social cutdowns", category: "Editing" },
-  { name: "Atlas", note: "Explainer · 60s", category: "Explainer" },
-  { name: "Ledgerly", note: "Six feature clips", category: "SaaS animation" },
-  { name: "Cartogram", note: "Map product launch film", category: "SaaS animation" },
-  { name: "Bellhop", note: "Booking site rebuild", category: "WordPress" },
-  { name: "Sightline", note: "Analytics portal", category: "Software" },
-  { name: "Rally", note: "Conference sizzle reel", category: "Editing" },
+  {
+    name: "Brands Concept",
+    note: "WordPress · signage company, UAE",
+    category: "WordPress",
+    image: "/work/brandsconcept/01-hero.jpg",
+    href: "https://brandsconcept.ae/",
+  },
+  {
+    name: "VYROVA Showreel",
+    note: "SaaS animation · our own reel",
+    category: "SaaS animation",
+    videoSrc: "/videos/vyrova-showreel.mp4",
+  },
+  {
+    name: "Same Footage, Two Cuts",
+    note: "Editing · our own film",
+    category: "Editing",
+    videoSrc: "/videos/same-footage-two-cuts.mp4",
+  },
+  {
+    name: "Built On WordPress",
+    note: "WordPress · sample explainer",
+    category: "WordPress",
+    videoSrc: "/videos/wordpress-built-on-wordpress.mp4",
+  },
+  {
+    name: "How Uber Works",
+    note: "Explainer · sample video",
+    category: "Explainer",
+    videoSrc: "/videos/saas-explanation-uber.mp4",
+  },
+  {
+    name: "How Stripe Makes Money",
+    note: "SaaS animation · sample explainer",
+    category: "SaaS animation",
+    videoSrc: "/videos/saas-animation-stripe.mp4",
+  },
 ] as const;
+
+/**
+ * The first real client build on this site. Every number below is checked
+ * against the live site, not estimated: six service pages, twelve projects
+ * in its portfolio, and a hand-built theme at wp-content/themes/brandsconcept
+ * with no page builder in the asset chain.
+ */
+export const caseStudy = {
+  eyebrow: "Client work · WordPress",
+  client: "Brands Concept",
+  legal: "Brands Concept FZC",
+  url: "https://brandsconcept.ae/",
+  host: "brandsconcept.ae",
+  sector: "Signage, printing and branding · Sharjah, UAE",
+  /** Their brand red, sampled off the live site. The section borrows it. */
+  accent: "#D40B01",
+  title: "A signage company that had to look as sharp as the work it installs.",
+  body:
+    "Brands Concept designs, fabricates and installs physical branding across the UAE, from a 300 mm reception logo to a 40 metre hoarding. Their site had to carry photographs of real installations at full bleed, route six different services to their own pages, and get a visitor to a quote in one tap. Built on WordPress with a custom theme, no page builder.",
+  facts: [
+    { label: "Platform", value: "WordPress, custom theme" },
+    { label: "Service pages", value: "Six, one per discipline" },
+    { label: "Portfolio", value: "Twelve installed projects" },
+    { label: "Quote path", value: "Form plus one-tap WhatsApp" },
+  ],
+  built: [
+    "Custom theme written for the brand, not a marketplace template",
+    "Photo-led layouts that hold up at full bleed on a phone",
+    "Six service pages under one Services menu",
+    "A twelve project portfolio, filterable by discipline",
+    "Quote CTA in the header, the hero and the footer",
+    "Arabic and English content sitting together in one layout",
+  ],
+  shots: [
+    { src: "/work/brandsconcept/01-hero.jpg", label: "Home", note: "We build brands you can touch." },
+    { src: "/work/brandsconcept/02-services.jpg", label: "Services", note: "Six disciplines, six pages." },
+    { src: "/work/brandsconcept/03-work.jpg", label: "Work", note: "Twelve installed projects." },
+    { src: "/work/brandsconcept/04-materials.jpg", label: "Materials", note: "What the work is made of." },
+  ],
+  cta: { label: "Open the live site", note: "Opens brandsconcept.ae in a new tab" },
+} as const;
 
 export const compare = {
   eyebrow: "Before / after",
-  title: "Drag the handle. Same product, our motion.",
+  title: "Drag the handle. It moves through time, not space.",
+  // No invented client story here. The claim is about the category, and the
+  // clip proving it is our own work.
   intro:
-    "Left is the screenshot a founder sent us. Right is what went on the homepage two weeks later.",
-  beforeLabel: "Before",
-  afterLabel: "After",
-} as const;
-
-export const results = {
-  title: "What changed for them.",
-  items: [
-    { value: "+38%", label: "trial signups" },
-    { value: "2.4M", label: "views" },
-    { value: "12 days", label: "delivery" },
-    { value: "+61%", label: "demo requests" },
-    { value: "9.4/10", label: "client score" },
-    { value: "48h", label: "first cut" },
-    { value: "+27%", label: "conversion" },
-    { value: "0", label: "missed deadlines" },
-  ],
+    "Most product pages are a screenshot with a button underneath. This is five seconds of ours: nine tangled windows collapsing into the one screen that mattered.",
+  src: "/videos/vyrova-showreel.mp4",
+  // The Complex -> Clear beat of the showreel, in finished-cut seconds.
+  start: 21.4,
+  end: 27.2,
+  beforeLabel: "Complex",
+  afterLabel: "Clear",
+  hint: "Drag, or let it run",
 } as const;

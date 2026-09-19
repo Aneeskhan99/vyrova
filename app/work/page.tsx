@@ -1,14 +1,14 @@
 import { Hero } from "@/components/sections/work/hero";
 import { Featured } from "@/components/sections/work/featured";
+import { CaseStudy } from "@/components/sections/work/case-study";
 import { Compare } from "@/components/sections/work/compare";
-import { Results } from "@/components/sections/work/results";
 import { Cta } from "@/components/sections/shared/cta";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
   title: "Work",
   description:
-    "SaaS animation, explainer video, WordPress and software projects from FrameWell. Filter by service, or drag the before and after slider.",
+    "Fifteen website designs, SaaS animation, explainer video, video editing and WordPress from VYROVA. Filter by service, or drag the before and after slider.",
   path: "/work",
 });
 
@@ -18,8 +18,8 @@ export default function WorkPage() {
     <>
       <Hero />
       <Featured />
+      <CaseStudy />
       <Compare />
-      <Results />
       <Cta />
     </>
   );

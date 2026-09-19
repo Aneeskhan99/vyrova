@@ -15,6 +15,11 @@
   --color-accent: #008c99;
   --color-accent-soft: #e0f3f5;
   --color-cyan: #22e5f0;
+  /* The mark's other two hues, so UI can pick them up by name. */
+  --color-indigo: #3a4fe8;
+  --color-violet: #7c5cf5;
+  --container-wide: 92rem;
+  --container-ultra: 104rem;
 
   /* The four project phases on /process. Named by role, not by hue, so
      re-tinting a phase is one edit here. */
@@ -240,5 +245,1634 @@
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===============================================================
+   VYROVA — brand motion and the design portfolio
+   =============================================================== */
+
+/* ---------------------------------------------------------------
+   Cross-document view transitions. Every page-to-page navigation
+   cross-fades, and any element that shares a view-transition-name
+   across the two pages morphs from one to the other: the logo holds
+   still, a clicked work card grows into the project's browser frame.
+   Zero JavaScript. Browsers without support simply navigate.
+   --------------------------------------------------------------- */
+@view-transition {
+  navigation: auto;
+}
+.fw-vt-logo {
+  view-transition-name: vy-logo;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.36s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+::view-transition-group(vy-logo) {
+  animation-duration: 0.001s;
+}
+::view-transition-group(*) {
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---------------------------------------------------------------
+   The mark building itself on load: back arm, fold, front arm, play.
+   Runs once per page load on the nav lockup only; the view
+   transition keeps the logo continuous between pages after that.
+   --------------------------------------------------------------- */
+@keyframes fw-mark-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.fw-mark-in {
+  transform-origin: center;
+  animation: fw-mark-pop 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* The big marks (hero, hub) hover gently: transform only. */
+@keyframes fw-mark-float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-2deg); }
+  50% { transform: translate3d(0, -8px, 0) rotate(2deg); }
+}
+.fw-mark-float {
+  animation: fw-mark-float 6s ease-in-out infinite;
+}
+
+/* ---------------------------------------------------------------
+   The Wall as a drafting table. The stage has perspective; the plane
+   is tilted and turned; three marquee rows lie on it. As the section
+   scrolls in, the plane stands up (scroll-driven, transform only). A
+   hovered card lifts along Z and its greyscale copy fades. Edges of
+   the stage are masked into the band so cards arrive out of the fog.
+   --------------------------------------------------------------- */
+.fw-stage {
+  perspective: 1500px;
+  perspective-origin: 50% 20%;
+  padding-block: 3rem 17rem;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 9%,
+    #000 91%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 9%,
+    #000 91%,
+    transparent
+  );
+}
+.fw-plane {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 150vw;
+  margin-left: -25vw;
+  transform-style: preserve-3d;
+  transform-origin: 50% 40%;
+  transform: rotateX(22deg) rotateZ(-6deg) scale(1.02);
+  will-change: transform;
+}
+@keyframes fw-plane-rise {
+  from {
+    transform: rotateX(46deg) rotateZ(-10deg) scale(0.94) translate3d(0, 90px, 0);
+  }
+  to {
+    transform: rotateX(22deg) rotateZ(-6deg) scale(1.02) translate3d(0, 0, 0);
+  }
+}
+@supports (animation-timeline: view()) {
+  .fw-plane {
+    animation: fw-plane-rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 42%;
+  }
+}
+.fw-wall-row {
+  transform-style: preserve-3d;
+}
+.fw-wall-row [data-marquee-track] {
+  transform-style: preserve-3d;
+  animation: fw-marquee var(--dur, 60s) linear infinite;
+  animation-delay: calc(var(--dur, 60s) * var(--phase, 0));
+}
+.fw-wall-row.is-reverse [data-marquee-track] {
+  animation-direction: reverse;
+}
+.fw-wall-card {
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  backface-visibility: hidden;
+}
+.fw-wall-card:hover,
+.fw-wall-card:focus-visible {
+  transform: translate3d(0, -6px, 70px) scale(1.03);
+}
+.fw-wall-grey {
+  filter: grayscale(1) contrast(0.96);
+  opacity: 0.92;
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-wall-card:hover .fw-wall-grey,
+.fw-wall-card:focus-visible .fw-wall-grey {
+  opacity: 0;
+}
+.fw-wall-open {
+  opacity: 0;
+  transform: translate3d(0, -6px, 0);
+  transition:
+    opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-wall-card:hover .fw-wall-open,
+.fw-wall-card:focus-visible .fw-wall-open {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+@media (max-width: 1023px) {
+  .fw-plane {
+    width: 170vw;
+    margin-left: -35vw;
+    transform: rotateX(18deg) rotateZ(-5deg);
+  }
+  @keyframes fw-plane-rise {
+    from {
+      transform: rotateX(36deg) rotateZ(-8deg) scale(0.96) translate3d(0, 50px, 0);
+    }
+    to {
+      transform: rotateX(18deg) rotateZ(-5deg) scale(1) translate3d(0, 0, 0);
+    }
+  }
+}
+
+/* ---------------------------------------------------------------
+   Project cards take on their own project's colour when hovered.
+   --tint is set per card from the sampled palette; the wash is a
+   separate layer whose opacity animates.
+   --------------------------------------------------------------- */
+.fw-tint-wash {
+  background: linear-gradient(160deg, var(--tint, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.group\/card:hover .fw-tint-wash,
+.fw-tilt:hover .fw-tint-wash {
+  opacity: 0.22;
+}
+
+/* ---------------------------------------------------------------
+   The scrolling browser frame on a design project page.
+   The runway is tall; the frame sticks inside it; the design image
+   travels upward on a view timeline scoped to the runway. Where
+   scroll-driven animations are unsupported the frame scrolls
+   natively instead, which is the honest fallback.
+   --------------------------------------------------------------- */
+.fw-frame-scope {
+  timeline-scope: --vy-runway;
+}
+.fw-frame-runway {
+  view-timeline-name: --vy-runway;
+  view-timeline-axis: block;
+  min-height: calc(var(--pages, 2.4) * 90vh);
+}
+.fw-frame-sticky {
+  position: sticky;
+  top: 6.5rem;
+}
+.fw-frame-view {
+  height: 68vh;
+  max-height: 760px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+@supports (animation-timeline: view()) {
+  .fw-frame-view {
+    overflow: hidden;
+  }
+  .fw-frame-track {
+    animation: fw-frame-scroll linear both;
+    animation-timeline: --vy-runway;
+    animation-range: contain 0% contain 100%;
+    will-change: transform;
+  }
+  .fw-frame-hint {
+    opacity: 1;
+  }
+}
+@keyframes fw-frame-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    /* the image's own height minus the visible window */
+    transform: translate3d(0, calc(-100% + min(68vh, 760px)), 0);
+  }
+}
+
+/* ---------------------------------------------------------------
+   Scroll-driven section entrances, on top of Reveal. Where view
+   timelines exist, a .fw-drift element rises as it enters the
+   viewport, tied to scroll position rather than a timer.
+   --------------------------------------------------------------- */
+@supports (animation-timeline: view()) {
+  .fw-drift {
+    animation: fw-drift linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 60%;
+  }
+}
+@keyframes fw-drift {
+  from {
+    opacity: 0.2;
+    transform: translate3d(0, 28px, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+
+/* ---------------------------------------------------------------
+   Client logos: grey at rest, their own colour on hover. Filter is
+   static per state; only opacity transitions (M-01).
+   --------------------------------------------------------------- */
+.fw-client-logo {
+  filter: grayscale(1);
+  opacity: 0.72;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-client:hover .fw-client-logo,
+.fw-client:focus-visible .fw-client-logo {
+  filter: none;
+  opacity: 1;
+}
+
+
+/* ---------------------------------------------------------------
+   The services deck. The list is one view timeline; each sticky card
+   sinks over its own slice of the list's exit, so the card beneath
+   shrinks exactly as the next one covers it. Transform + opacity only.
+   --------------------------------------------------------------- */
+.fw-deck {
+  view-timeline-name: --fw-deck;
+  view-timeline-axis: block;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.fw-deck-card {
+  position: sticky;
+  top: calc(5.25rem + var(--i, 0) * 0.875rem);
+  transform-origin: 50% 0;
+}
+.fw-deck-face {
+  background:
+    radial-gradient(
+      90% 70% at 100% 0%,
+      color-mix(in oklab, var(--tint, var(--color-cyan)) 16%, var(--color-surface)),
+      var(--color-surface) 62%
+    );
+  transform-origin: 50% 0;
+}
+.fw-deck-num {
+  color: color-mix(in oklab, var(--tint, var(--color-cyan)) 55%, var(--color-surface));
+  opacity: 0.35;
+}
+/* The scrim: a ground-coloured veil that fades in as the card sinks,
+   so the pile beneath never shows through. Cards themselves stay opaque. */
+.fw-deck-face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: var(--color-ground);
+  opacity: 0;
+}
+@keyframes fw-deck-sink {
+  to {
+    transform: scale(0.94) translate3d(0, -0.5rem, 0);
+  }
+}
+@keyframes fw-deck-veil {
+  to {
+    opacity: 0.72;
+  }
+}
+@supports (animation-timeline: view()) {
+  .fw-deck-face,
+  .fw-deck-face::after {
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --fw-deck;
+    animation-range:
+      exit-crossing calc(var(--i, 0) / var(--n, 7) * 100%)
+      exit-crossing calc((var(--i, 0) + 1) / var(--n, 7) * 100%);
+  }
+  .fw-deck-face {
+    animation-name: fw-deck-sink;
+  }
+  .fw-deck-face::after {
+    animation-name: fw-deck-veil;
+  }
+}
+
+
+/* ---------------------------------------------------------------
+   Hero backdrop. Aurora: three soft blobs in the brand's cyan, violet
+   and indigo, drifting on transform only. Floor: a perspective grid
+   that runs towards the horizon, its plane translating one cell per
+   loop so the seam never shows. Sweep: a radar arc turning behind the
+   mark. Cue: a bar sliding down a hairline.
+   --------------------------------------------------------------- */
+.fw-aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  filter: blur(48px);
+  opacity: 0.55;
+  contain: strict;
+}
+.fw-aurora > span {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+}
+.fw-aurora-a {
+  width: 44vw;
+  height: 44vw;
+  left: -8vw;
+  top: -14vw;
+  background: radial-gradient(circle, color-mix(in oklab, var(--color-cyan) 60%, transparent), transparent 66%);
+  animation: fw-aurora-a 26s ease-in-out infinite alternate;
+}
+.fw-aurora-b {
+  width: 40vw;
+  height: 40vw;
+  right: -6vw;
+  top: 4vw;
+  background: radial-gradient(circle, color-mix(in oklab, var(--color-violet) 42%, transparent), transparent 66%);
+  animation: fw-aurora-b 32s ease-in-out infinite alternate;
+}
+.fw-aurora-c {
+  width: 36vw;
+  height: 36vw;
+  left: 34vw;
+  bottom: -20vw;
+  background: radial-gradient(circle, color-mix(in oklab, var(--color-indigo) 34%, transparent), transparent 66%);
+  animation: fw-aurora-c 38s ease-in-out infinite alternate;
+}
+@keyframes fw-aurora-a {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(14vw, 10vw, 0) scale(1.18); }
+}
+@keyframes fw-aurora-b {
+  from { transform: translate3d(0, 0, 0) scale(1.1); }
+  to { transform: translate3d(-12vw, 12vw, 0) scale(0.9); }
+}
+@keyframes fw-aurora-c {
+  from { transform: translate3d(0, 0, 0) scale(0.95); }
+  to { transform: translate3d(-10vw, -8vw, 0) scale(1.15); }
+}
+
+.fw-floor {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 46%;
+  perspective: 700px;
+  perspective-origin: 50% 0%;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, transparent, #000 55%, #000 90%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 55%, #000 90%, transparent);
+  opacity: 0.7;
+}
+.fw-floor-plane {
+  --cell: 64px;
+  position: absolute;
+  left: -50%;
+  right: -50%;
+  top: 0;
+  height: 300%;
+  transform-origin: 50% 0;
+  transform: rotateX(62deg) translate3d(0, 0, 0);
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--color-accent) 22%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--color-accent) 22%, transparent) 1px, transparent 1px);
+  background-size: var(--cell) var(--cell);
+  animation: fw-floor 2.6s linear infinite;
+  will-change: transform;
+}
+@keyframes fw-floor {
+  from { transform: rotateX(62deg) translate3d(0, 0, 0); }
+  to { transform: rotateX(62deg) translate3d(0, var(--cell), 0); }
+}
+
+.fw-sweep {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 285deg,
+    color-mix(in oklab, var(--color-cyan) 22%, transparent) 360deg
+  );
+  mask-image: radial-gradient(circle, transparent 41%, #000 43%, #000 58%, transparent 60%);
+  -webkit-mask-image: radial-gradient(circle, transparent 41%, #000 43%, #000 58%, transparent 60%);
+  animation: fw-spin 9s linear infinite;
+  will-change: transform;
+}
+
+@keyframes fw-cue {
+  from { transform: translate3d(0, -100%, 0); }
+  to { transform: translate3d(0, 260%, 0); }
+}
+.fw-cue-bar {
+  animation: fw-cue 1.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+
+/* ---------------------------------------------------------------
+   Integrations: nodes bob on their own phase, rings leave the hub,
+   and the job log types itself in a loop. Five line keyframes so every
+   line has its own window inside one shared 11s cycle.
+   --------------------------------------------------------------- */
+.fw-node {
+  animation: fw-float 6s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+}
+.fw-node:hover {
+  animation-play-state: paused;
+}
+@keyframes fw-ring {
+  0% { transform: scale(0.55); opacity: 0; }
+  12% { opacity: 0.7; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+.fw-ring {
+  animation: fw-ring 4.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  animation-delay: var(--d, 0s);
+  will-change: transform, opacity;
+}
+.fw-log-line {
+  opacity: 0;
+  animation: fw-log-0 11s linear infinite;
+}
+.fw-log-line[data-line="1"] { animation-name: fw-log-1; }
+.fw-log-line[data-line="2"] { animation-name: fw-log-2; }
+.fw-log-line[data-line="3"] { animation-name: fw-log-3; }
+.fw-log-line[data-line="4"] { animation-name: fw-log-4; }
+@keyframes fw-log-0 { 0% { opacity: 0; transform: translate3d(0, 6px, 0); } 4% { opacity: 1; transform: none; } 88% { opacity: 1; } 94%, 100% { opacity: 0; } }
+@keyframes fw-log-1 { 0%, 14% { opacity: 0; transform: translate3d(0, 6px, 0); } 18% { opacity: 1; transform: none; } 88% { opacity: 1; } 94%, 100% { opacity: 0; } }
+@keyframes fw-log-2 { 0%, 30% { opacity: 0; transform: translate3d(0, 6px, 0); } 34% { opacity: 1; transform: none; } 88% { opacity: 1; } 94%, 100% { opacity: 0; } }
+@keyframes fw-log-3 { 0%, 50% { opacity: 0; transform: translate3d(0, 6px, 0); } 54% { opacity: 1; transform: none; } 88% { opacity: 1; } 94%, 100% { opacity: 0; } }
+@keyframes fw-log-4 { 0%, 68% { opacity: 0; transform: translate3d(0, 6px, 0); } 72% { opacity: 1; transform: none; } 88% { opacity: 1; } 94%, 100% { opacity: 0; } }
+@keyframes fw-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.fw-log-cursor {
+  animation: fw-blink 1s steps(1) infinite;
+}
+
+
+/* ---------------------------------------------------------------
+   Showcase laptop. The lid rides ContainerScroll's tilt; the captions
+   drift on view timelines at their own speeds (parallax), transform
+   only. Without scroll-driven support they simply sit still.
+   --------------------------------------------------------------- */
+.fw-laptop {
+  transform-style: preserve-3d;
+}
+@keyframes fw-caption-drift {
+  from { transform: translate3d(0, calc(70px * var(--speed, 1)), 0); }
+  to { transform: translate3d(0, calc(-70px * var(--speed, 1)), 0); }
+}
+@supports (animation-timeline: view()) {
+  .fw-caption {
+    animation: fw-caption-drift linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+}
+
+
+/* ---------------------------------------------------------------
+   Selected work: the sideways shelf. Runway (tall) > stage (sticky,
+   viewport-high) > scroller > track. The track translates on the
+   runway's view timeline through its stuck phase; the bar scales with
+   it. Without support, or under lg, the runway collapses and the
+   scroller scrolls natively with snap points.
+   --------------------------------------------------------------- */
+.fw-hs {
+  --fw-gutter: 1.25rem;
+}
+@media (min-width: 640px) { .fw-hs { --fw-gutter: 2rem; } }
+@media (min-width: 1024px) { .fw-hs { --fw-gutter: 3rem; } }
+@media (min-width: 1536px) { .fw-hs { --fw-gutter: 4rem; } }
+.fw-hs-runway {
+  view-timeline-name: --fw-hs;
+  view-timeline-axis: block;
+}
+.fw-hs-scroller {
+  padding-bottom: 2rem;
+}
+.fw-hs-track {
+  display: flex;
+  gap: 1.25rem;
+  width: max-content;
+  padding-inline: var(--fw-gutter);
+  will-change: transform;
+}
+.fw-hs-card {
+  flex: none;
+  width: min(78vw, 22rem);
+  aspect-ratio: 16 / 11;
+}
+.fw-hs-bar {
+  transform: scaleX(0);
+}
+/* Native scroller: the default, and the fallback everywhere. */
+.fw-hs-scroller {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--fw-gutter);
+  scrollbar-width: none;
+}
+.fw-hs-scroller::-webkit-scrollbar { display: none; }
+.fw-hs-card { scroll-snap-align: start; }
+
+@keyframes fw-hs-slide {
+  to { transform: translate3d(calc(100vw - 100%), 0, 0); }
+}
+@keyframes fw-hs-grow {
+  to { transform: scaleX(1); }
+}
+@media (min-width: 1024px) {
+  @supports (animation-timeline: view()) {
+    .fw-hs-runway {
+      height: 320vh;
+    }
+    .fw-hs-stage {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .fw-hs-scroller {
+      overflow: visible;
+      scroll-snap-type: none;
+      padding-bottom: 0;
+    }
+    .fw-hs-card {
+      width: min(52vw, 44rem);
+      aspect-ratio: 16 / 9;
+      max-height: 56vh;
+    }
+    .fw-hs-track {
+      animation: fw-hs-slide linear both;
+      animation-timeline: --fw-hs;
+      animation-range: contain 0% contain 100%;
+    }
+    .fw-hs-bar {
+      animation: fw-hs-grow linear both;
+      animation-timeline: --fw-hs;
+      animation-range: contain 0% contain 100%;
+    }
+  }
+}
+
+
+/* ---------------------------------------------------------------
+   Process pipeline. The pulse rides the conveyor on an 8s loop; each
+   step's icon pings when the pulse passes (delay = i/n of the loop).
+   Cards flip on hover/focus: 3D rotate on the inner, faces with
+   backface hidden. Transform and opacity only.
+   --------------------------------------------------------------- */
+.fw-conveyor-track {
+  background: linear-gradient(to right, transparent, var(--color-line) 8%, var(--color-line) 92%, transparent);
+}
+.fw-conveyor-pulse {
+  left: 0;
+  background: linear-gradient(to right, transparent, var(--color-cyan), transparent);
+  animation: fw-conveyor 8s linear infinite;
+  will-change: transform;
+}
+.fw-conveyor {
+  container-type: inline-size;
+  height: 1rem;
+}
+@keyframes fw-conveyor {
+  from { transform: translate3d(-100%, -50%, 0); }
+  to { transform: translate3d(100cqw, -50%, 0); }
+}
+.fw-ping-ring {
+  opacity: 0;
+  animation: fw-ping 8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  animation-delay: calc(var(--i, 0) / var(--n, 4) * 8s + 1s);
+}
+@keyframes fw-ping {
+  0% { transform: scale(1); opacity: 0.8; }
+  10% { transform: scale(1.7); opacity: 0; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+.fw-flip {
+  perspective: 1400px;
+}
+.fw-flip-inner {
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-flip:hover .fw-flip-inner,
+.fw-flip:focus-visible .fw-flip-inner {
+  transform: rotateY(180deg);
+}
+.fw-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.fw-face-back {
+  transform: rotateY(180deg);
+}
+
+
+/* ---------------------------------------------------------------
+   FAQ chat. Bubbles arrive (opacity + rise); the typing dots bounce.
+   --------------------------------------------------------------- */
+@keyframes fw-bubble-in {
+  from { opacity: 0; transform: translate3d(0, 10px, 0) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+.fw-bubble-in {
+  animation: fw-bubble-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes fw-typing {
+  0%, 60%, 100% { transform: translate3d(0, 0, 0); opacity: 0.5; }
+  30% { transform: translate3d(0, -4px, 0); opacity: 1; }
+}
+.fw-typing > span {
+  animation: fw-typing 1.1s ease-in-out infinite;
+}
+.fw-typing > span:nth-child(2) { animation-delay: 0.15s; }
+.fw-typing > span:nth-child(3) { animation-delay: 0.3s; }
+
+
+/* The live question: gradient border and gradient text, with a soft
+   sheen sliding across (transform only). */
+.fw-chip-live {
+  background:
+    linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+    linear-gradient(90deg, var(--color-cyan), var(--color-violet), var(--color-indigo)) border-box;
+  box-shadow: 0 8px 24px -12px color-mix(in oklab, var(--color-cyan) 60%, transparent);
+  overflow: hidden;
+}
+.fw-chip-live::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, color-mix(in oklab, var(--color-cyan) 22%, transparent) 50%, transparent 70%);
+  transform: translate3d(-100%, 0, 0);
+  animation: fw-sheen 1.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+@keyframes fw-sheen {
+  to { transform: translate3d(100%, 0, 0); }
+}
+.fw-chip-text {
+  background: linear-gradient(90deg, var(--color-accent), var(--color-indigo));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+
+/* ---------------------------------------------------------------
+   Work page: the cinema and the dark bands.
+   --------------------------------------------------------------- */
+.fw-dark-glow {
+  background:
+    radial-gradient(60% 50% at 20% 0%, color-mix(in oklab, var(--color-cyan) 18%, transparent), transparent 70%),
+    radial-gradient(50% 40% at 90% 100%, color-mix(in oklab, var(--color-violet) 16%, transparent), transparent 70%);
+}
+.fw-cinema-bar {
+  transform: scaleX(var(--p, 0));
+  transition: transform 0.25s linear;
+}
+.fw-filmstrip {
+  scrollbar-width: none;
+  padding-block: 0.75rem;
+  background:
+    repeating-linear-gradient(to right, transparent 0 10px, color-mix(in oklab, var(--color-surface) 12%, transparent) 10px 18px, transparent 18px 26px) top / 100% 5px no-repeat,
+    repeating-linear-gradient(to right, transparent 0 10px, color-mix(in oklab, var(--color-surface) 12%, transparent) 10px 18px, transparent 18px 26px) bottom / 100% 5px no-repeat;
+}
+.fw-filmstrip::-webkit-scrollbar { display: none; }
+.fw-filmstrip {
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 1.25rem;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+}
+.fw-filmstrip > ol > li { scroll-snap-align: start; }
+
+
+/* Work hero: words rise through a mask, one after another. */
+@keyframes fw-word-in {
+  from { transform: translate3d(0, 110%, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+.fw-word-in {
+  animation: fw-word-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 80ms);
+}
+/* Gallery: the pill slides between tabs; cards pop in after a filter. */
+.fw-tab-pill {
+  width: var(--w, 0px);
+  transform: translate3d(var(--x, 0px), 0, 0);
+  transition:
+    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes fw-pop {
+  from { opacity: 0; transform: translate3d(0, 18px, 0) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+.fw-pop {
+  animation: fw-pop 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+
+/* Case study takeover: the client's colour scales in on the section's
+   own view timeline; the thread beside the list draws as it enters. */
+.fw-takeover-disc {
+  background: radial-gradient(circle, color-mix(in oklab, var(--tour-accent, #d40b01) 22%, transparent), transparent 62%);
+  transform: scale(0.2);
+  opacity: 0;
+}
+.fw-thread-line {
+  transform: scaleY(0);
+}
+@keyframes fw-takeover {
+  from { transform: scale(0.2); opacity: 0; }
+  to { transform: scale(1.4); opacity: 1; }
+}
+@keyframes fw-thread {
+  to { transform: scaleY(1); }
+}
+@supports (animation-timeline: view()) {
+  .fw-takeover-disc {
+    animation: fw-takeover linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 100%;
+  }
+  .fw-thread-line {
+    animation: fw-thread linear both;
+    animation-timeline: view();
+    animation-range: entry 10% entry 90%;
+  }
+}
+/* Compare: ghost words on their own parallax. */
+.fw-ghost {
+  color: color-mix(in oklab, var(--color-surface) 6%, transparent);
+  -webkit-text-stroke: 1px color-mix(in oklab, var(--color-cyan) 25%, transparent);
+}
+@keyframes fw-ghost-left {
+  from { transform: translate3d(12vw, 0, 0); }
+  to { transform: translate3d(-8vw, 0, 0); }
+}
+@keyframes fw-ghost-right {
+  from { transform: translate3d(-12vw, 0, 0); }
+  to { transform: translate3d(8vw, 0, 0); }
+}
+@supports (animation-timeline: view()) {
+  .fw-ghost {
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+  .fw-ghost-left { animation-name: fw-ghost-left; }
+  .fw-ghost-right { animation-name: fw-ghost-right; }
+}
+
+
+/* ---------------------------------------------------------------
+   Project cards: lean towards the cursor, glare, cover ease, colour
+   under the edge, label slide. TiltCard writes --rx/--ry/--gx/--gy/--on.
+   --------------------------------------------------------------- */
+.fw-tiltcard {
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translate3d(0, calc(var(--on, 0) * -6px), 0);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+.fw-glare {
+  background: radial-gradient(
+    60% 60% at var(--gx, 50%) var(--gy, 50%),
+    color-mix(in oklab, var(--color-surface) 22%, transparent),
+    transparent 70%
+  );
+  opacity: var(--on, 0);
+  transition: opacity 0.3s ease-out;
+}
+.fw-project-cover {
+  transform: scale(1);
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-project:hover .fw-project-cover {
+  transform: scale(1.06);
+}
+.fw-project-edge {
+  box-shadow: inset 0 -80px 80px -60px color-mix(in oklab, var(--tint, transparent) 55%, transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+.fw-project:hover .fw-project-edge {
+  opacity: 1;
+}
+.fw-project-open {
+  opacity: 0;
+  transform: translate3d(0, 6px, 0);
+  transition:
+    opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-project:hover .fw-project-open,
+.fw-project:focus-within .fw-project-open {
+  opacity: 1;
+  transform: none;
+}
+.fw-project-arrow {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-project:hover .fw-project-arrow {
+  transform: translate3d(0, -4px, 0) rotate(-8deg);
+}
+
+
+/* Cover flow. The track is the scroller and the perspective; each item
+   animates on its own inline view timeline: turned away at the edges,
+   square and full size in the middle. Reflection below on wide screens. */
+.fw-flow {
+  --fw-card: min(76vw, 28rem);
+}
+.fw-flow-track {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  padding-inline: calc(50% - var(--fw-card) / 2);
+  padding-block: 1rem 4.5rem;
+  perspective: 1200px;
+  scrollbar-width: none;
+}
+.fw-flow-track::-webkit-scrollbar { display: none; }
+.fw-flow-item {
+  flex: none;
+  width: var(--fw-card);
+  scroll-snap-align: center;
+  transform-style: preserve-3d;
+}
+@keyframes fw-flow {
+  0% { transform: rotateY(42deg) scale(0.82) translate3d(10%, 0, -80px); opacity: 0.45; }
+  50% { transform: rotateY(0deg) scale(1) translate3d(0, 0, 0); opacity: 1; }
+  100% { transform: rotateY(-42deg) scale(0.82) translate3d(-10%, 0, -80px); opacity: 0.45; }
+}
+@supports (animation-timeline: view()) {
+  .fw-flow-item {
+    animation: fw-flow linear both;
+    animation-timeline: view(inline);
+    animation-range: cover 0% cover 100%;
+    will-change: transform, opacity;
+  }
+}
+@media (min-width: 1024px) {
+  .fw-flow-item {
+    -webkit-box-reflect: below 10px linear-gradient(transparent 78%, rgb(0 0 0 / 0.18));
+  }
+}
+
+
+/* The self-typing editor: lines land one after another over a 9s loop
+   (six line keyframes would be tidier; a single one with per-line delay
+   and a long hold reads the same), then the toast slides in. */
+.fw-code-line {
+  opacity: 0;
+  animation: fw-code-line 9s linear infinite;
+  animation-delay: calc(var(--i, 0) * 0.55s);
+}
+@keyframes fw-code-line {
+  0% { opacity: 0; transform: translate3d(-6px, 0, 0); }
+  4% { opacity: 1; transform: none; }
+  84% { opacity: 1; }
+  90%, 100% { opacity: 0; }
+}
+.fw-code-toast {
+  opacity: 0;
+  animation: fw-code-toast 9s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+@keyframes fw-code-toast {
+  0%, 44% { opacity: 0; transform: translate3d(0, 10px, 0); }
+  50% { opacity: 1; transform: none; }
+  84% { opacity: 1; }
+  90%, 100% { opacity: 0; }
+}
+
+
+/* ---------------------------------------------------------------
+   Services page: rail, ghost ticker, numerals, parallax visuals,
+   inbox cards, comparison rows.
+   --------------------------------------------------------------- */
+.fw-rail {
+  opacity: 0;
+  transform: translate3d(-12px, -50%, 0);
+  transition: opacity 0.35s ease-out, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-rail-on {
+  opacity: 1;
+  transform: translate3d(0, -50%, 0);
+}
+.fw-rail-label {
+  opacity: 0;
+  transform: translate3d(-6px, 0, 0);
+  transition: opacity 0.25s ease-out, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-rail a:hover .fw-rail-label,
+.fw-rail a:focus-visible .fw-rail-label,
+.fw-rail-label-on {
+  opacity: 1;
+  transform: none;
+}
+.fw-ghost-ticker [data-marquee-track] {
+  animation: fw-marquee 90s linear infinite;
+}
+.fw-ghost-ticker .fw-ghost {
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in oklab, var(--color-accent) 16%, transparent);
+}
+.fw-svc-num {
+  color: color-mix(in oklab, var(--color-accent) 10%, transparent);
+}
+@keyframes fw-svc-parallax {
+  from { transform: translate3d(0, 48px, 0); }
+  to { transform: translate3d(0, -48px, 0); }
+}
+@media (min-width: 1024px) {
+  @supports (animation-timeline: view()) {
+    .fw-svc-visual {
+      animation: fw-svc-parallax linear both;
+      animation-timeline: view();
+      animation-range: entry 0% exit 100%;
+    }
+  }
+}
+.fw-inbox-item {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-inbox-item:hover {
+  transform: translate3d(6px, 0, 0);
+}
+.fw-cmp-win {
+  background: linear-gradient(90deg, color-mix(in oklab, var(--color-cyan) 12%, transparent), transparent);
+}
+@supports (animation-timeline: view()) {
+  .fw-cmp-row {
+    animation: fw-drift linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+}
+
+
+/* ---------------------------------------------------------------
+   Services: the kit unpacks, the plans under a spotlight, the board.
+   --------------------------------------------------------------- */
+/* Kit: cards start piled on the first and fan out on the section's
+   view timeline; bars fill and checks stamp once each card has settled. */
+.fw-kit {
+  view-timeline-name: --fw-kit;
+  view-timeline-axis: block;
+}
+.fw-kit-card {
+  will-change: transform;
+}
+.fw-kit-bar { transform: scaleX(1); }
+.fw-kit-check { transform: scale(1); }
+@keyframes fw-kit-fan {
+  from { transform: translate3d(0, calc(var(--i, 0) * -100% - var(--i, 0) * 0.75rem), 0) scale(calc(1 - var(--i, 0) * 0.03)); opacity: calc(1 - var(--i, 0) * 0.12); }
+  to { transform: none; opacity: 1; }
+}
+@keyframes fw-kit-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes fw-kit-stamp {
+  from { transform: scale(0) rotate(-30deg); opacity: 0; }
+  to { transform: scale(1) rotate(0); opacity: 1; }
+}
+@keyframes fw-kit-ring {
+  from { --ring: 0turn; }
+  to { --ring: 1turn; }
+}
+@property --ring {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 1turn;
+}
+.fw-kit-ring { position: relative; }
+.fw-kit-ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(var(--color-cyan) var(--ring, 1turn), color-mix(in oklab, var(--color-surface) 12%, transparent) 0);
+  -webkit-mask: radial-gradient(circle, transparent 60%, #000 62%);
+  mask: radial-gradient(circle, transparent 60%, #000 62%);
+}
+@supports (animation-timeline: view()) {
+  .fw-kit-card {
+    animation: fw-kit-fan cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-timeline: --fw-kit;
+    animation-range: entry 10% entry 70%;
+  }
+  .fw-kit-bar {
+    animation: fw-kit-fill linear both;
+    animation-timeline: --fw-kit;
+    animation-range: entry calc(30% + var(--i, 0) * 8%) entry calc(55% + var(--i, 0) * 8%);
+  }
+  .fw-kit-check {
+    animation: fw-kit-stamp cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-timeline: --fw-kit;
+    animation-range: entry calc(55% + var(--i, 0) * 8%) entry calc(62% + var(--i, 0) * 8%);
+  }
+  .fw-kit-ring::after {
+    animation: fw-kit-ring linear both;
+    animation-timeline: --fw-kit;
+    animation-range: entry 30% entry 100%;
+  }
+}
+
+/* Plans: one spotlight over the grid; each card's ring lights where the
+   cursor is (gradient in border-box, masked to the border). */
+.fw-plans-bg {
+  background:
+    radial-gradient(40% 40% at 50% 60%, color-mix(in oklab, var(--color-cyan) 12%, transparent), transparent 70%),
+    linear-gradient(to right, color-mix(in oklab, var(--color-line) 60%, transparent) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(to bottom, color-mix(in oklab, var(--color-line) 60%, transparent) 1px, transparent 1px) 0 0 / 48px 48px;
+  mask-image: radial-gradient(60% 60% at 50% 55%, #000, transparent);
+  -webkit-mask-image: radial-gradient(60% 60% at 50% 55%, #000, transparent);
+}
+.fw-plan-face::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: radial-gradient(
+    260px circle at calc(var(--mx, -999px) - var(--ox, 0px)) calc(var(--my, -999px) - var(--oy, 0px)),
+    var(--color-cyan),
+    transparent 70%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: var(--lit, 0);
+  transition: opacity 0.3s ease-out;
+  pointer-events: none;
+}
+.fw-plan { position: relative; }
+@property --spin {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes fw-spin-border { to { --spin: 360deg; } }
+.fw-plan-featured::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(from var(--spin, 0deg), transparent 0 60%, var(--color-cyan) 80%, var(--color-violet) 90%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: fw-spin-border 6s linear infinite;
+  pointer-events: none;
+}
+.fw-plan-featured {
+  animation: fw-float 7s ease-in-out infinite;
+  box-shadow: 0 30px 60px -30px color-mix(in oklab, var(--color-cyan) 45%, transparent);
+}
+.fw-plan-tick {
+  transform: scale(0.6);
+  opacity: 0.35;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease-out;
+  transition-delay: calc(var(--i, 0) * 60ms);
+}
+.fw-plan:hover .fw-plan-tick,
+.fw-plan:focus-within .fw-plan-tick {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Board: bars fill and checks stamp as the board enters. */
+.fw-board { view-timeline-name: --fw-board; }
+.fw-board-bar { transform: scaleX(var(--p, 1)); }
+.fw-board-us { box-shadow: -14px 0 30px -20px rgb(0 0 0 / 0.5), 14px 0 30px -20px rgb(0 0 0 / 0.5); }
+.fw-board-us-head { box-shadow: 0 -18px 30px -20px rgb(0 0 0 / 0.4); }
+@keyframes fw-board-fill { from { transform: scaleX(0); } to { transform: scaleX(var(--p, 1)); } }
+@keyframes fw-board-stamp {
+  from { transform: scale(1.8) rotate(-12deg); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes fw-board-fade { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
+@supports (animation-timeline: view()) {
+  .fw-board-bar {
+    animation: fw-board-fill cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-timeline: --fw-board;
+    animation-range: entry 20% entry 70%;
+  }
+  .fw-stamp {
+    animation: fw-board-stamp cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-timeline: --fw-board;
+    animation-range: entry calc(25% + var(--i, 0) * 7%) entry calc(38% + var(--i, 0) * 7%);
+  }
+  .fw-board-no {
+    animation: fw-board-fade linear both;
+    animation-timeline: --fw-board;
+    animation-range: entry calc(30% + var(--i, 0) * 7%) entry calc(42% + var(--i, 0) * 7%);
+  }
+}
+
+
+/* ---------------------------------------------------------------
+   Process page: hero flanks, swinging steps, week playhead, promises.
+   --------------------------------------------------------------- */
+/* Hero: ticks land one by one, the scrub bar plays, the pulse rides
+   the route Mon → Wed. Loops keep the flanks alive while you read. */
+@keyframes fw-hero-tick { 0%, 100% { opacity: 0.35; } 20%, 80% { opacity: 1; } }
+@keyframes fw-hero-tick-box { 0%, 12% { transform: scale(0.4); } 22%, 100% { transform: scale(1); } }
+.fw-hero-tick { animation: fw-hero-tick 6s ease-in-out infinite; animation-delay: calc(var(--i, 0) * 0.5s); }
+.fw-hero-tick-box { animation: fw-hero-tick-box 6s cubic-bezier(0.16, 1, 0.3, 1) infinite; animation-delay: calc(var(--i, 0) * 0.5s); }
+@keyframes fw-hero-scrub { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.fw-hero-scrub { animation: fw-hero-scrub 6s linear infinite; }
+.fw-hero-play { animation: fw-pulse-soft 2.4s ease-in-out infinite; }
+@keyframes fw-pulse-soft { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+@keyframes fw-route-pulse { from { transform: translate3d(0, -50%, 0); } to { transform: translate3d(calc(var(--w, 600px)), -50%, 0); } }
+.fw-route { container-type: inline-size; }
+.fw-route-pulse {
+  left: 0;
+  box-shadow: 0 0 16px var(--color-cyan);
+  animation: fw-route-go 6s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+@keyframes fw-route-go { from { transform: translate3d(0, -50%, 0); } to { transform: translate3d(100cqw, -50%, 0); } }
+
+/* Steps: each card swings in around the rail as it enters; the marker
+   pops and pings; the chips tick in once the card is up. */
+.fw-step-swing { perspective: 1200px; transform-style: preserve-3d; }
+.fw-step-card { transform-origin: 0% 50%; }
+.fw-step-ping { opacity: 0; }
+/* One timeline per card, entry to exit: swing in, hold, settle back. */
+@keyframes fw-step-swing {
+  0% { transform: rotateY(-28deg) translate3d(-24px, 0, -60px); opacity: 0.2; }
+  30%, 70% { transform: none; opacity: 1; }
+  100% { transform: scale(0.965) translate3d(0, -8px, 0); opacity: 1; }
+}
+.fw-step-veil { opacity: 0; }
+.fw-step-done { opacity: 0; transform: scale(1.6) rotate(-6deg); }
+.fw-step-dot-done { opacity: 0; transform: scale(0.4); }
+@keyframes fw-step-veil { 0%, 70% { opacity: 0; } 100% { opacity: 0.55; } }
+@keyframes fw-step-done { 0%, 68% { opacity: 0; transform: scale(1.6) rotate(-6deg); } 76%, 100% { opacity: 1; transform: none; } }
+@keyframes fw-step-dot-done { 0%, 68% { opacity: 0; transform: scale(0.4); } 76%, 100% { opacity: 1; transform: none; } }
+@keyframes fw-step-meter { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.fw-step-meter { transform-origin: left; }
+@keyframes fw-step-dot { from { transform: scale(0.6); } to { transform: scale(1); } }
+@keyframes fw-step-ping-k { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(2.2); opacity: 0; } }
+@keyframes fw-step-chip { from { opacity: 0; transform: translate3d(0, 8px, 0); } to { opacity: 1; transform: none; } }
+@supports (animation-timeline: view()) {
+  .fw-step-card {
+    animation: fw-step-swing linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+  .fw-step-veil,
+  .fw-step-done,
+  .fw-step-dot-done {
+    animation-timing-function: cubic-bezier(0.2, 1.4, 0.4, 1);
+    animation-fill-mode: both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+  .fw-step-veil { animation-name: fw-step-veil; animation-timing-function: linear; }
+  .fw-step-done { animation-name: fw-step-done; }
+  .fw-step-dot-done { animation-name: fw-step-dot-done; }
+  .fw-step-meter {
+    animation: fw-step-meter cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-timeline: view();
+    animation-range: entry 20% entry 60%;
+  }
+  .fw-step-dot {
+    animation: fw-step-dot cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+  .fw-step-ping {
+    animation: fw-step-ping-k ease-out both;
+    animation-timeline: view();
+    animation-range: entry 30% entry 90%;
+  }
+  .fw-step-chip {
+    animation: fw-step-chip cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-timeline: view();
+    animation-range: entry calc(20% + var(--j, 0) * 10%) entry calc(50% + var(--j, 0) * 10%);
+  }
+}
+
+/* Week: tiles rise in order on the strip's own timeline; a playhead
+   sweeps the ten days on a loop. */
+.fw-week { view-timeline-name: --fw-week; }
+@keyframes fw-week-rise { from { transform: translate3d(0, 24px, 0); opacity: 0.3; } to { transform: none; opacity: 1; } }
+@supports (animation-timeline: view()) {
+  .fw-week-tile {
+    animation: fw-week-rise cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-timeline: --fw-week;
+    animation-range: entry calc(var(--i, 0) * 6%) entry calc(40% + var(--i, 0) * 6%);
+  }
+}
+@keyframes fw-week-head { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(100cqw, 0, 0); } }
+.fw-week { container-type: inline-size; }
+.fw-week-head { animation: fw-week-head 12s linear infinite; opacity: 0.5; }
+.fw-week-day > div > div:hover .fw-week-tile,
+.fw-week-tile:hover { transform: translate3d(0, -4px, 0); }
+.fw-week-tile { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s; }
+
+/* Promises: paper, stamp slam, signature draw. */
+.fw-paper {
+  background-image:
+    repeating-linear-gradient(to bottom, transparent 0 27px, color-mix(in oklab, var(--color-line) 70%, transparent) 27px 28px);
+  background-color: var(--color-surface);
+}
+.fw-paper-fold {
+  background: linear-gradient(225deg, var(--color-ground) 0 50%, var(--color-line) 50% 51%, transparent 51%);
+}
+.fw-stamp-mark {
+  transform: rotate(-8deg) scale(2.4);
+  opacity: 0;
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='6'><circle cx='3' cy='3' r='2.4' fill='black'/></svg>");
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='6'><circle cx='3' cy='3' r='2.4' fill='black'/></svg>");
+  mask-size: 3px 3px;
+  -webkit-mask-size: 3px 3px;
+}
+@keyframes fw-stamp-slam { from { transform: rotate(-8deg) scale(2.4); opacity: 0; } 70% { transform: rotate(-8deg) scale(0.92); opacity: 1; } to { transform: rotate(-8deg) scale(1); opacity: 0.95; } }
+.fw-sign-path { stroke-dasharray: 1; stroke-dashoffset: 1; }
+@keyframes fw-sign { to { stroke-dashoffset: 0; } }
+@supports (animation-timeline: view()) {
+  .fw-stamp-mark {
+    animation: fw-stamp-slam cubic-bezier(0.2, 1.4, 0.4, 1) both;
+    animation-timeline: view();
+    animation-range: entry calc(35% + var(--i, 0) * 8%) entry calc(60% + var(--i, 0) * 8%);
+  }
+  .fw-sign-path {
+    animation: fw-sign linear both;
+    animation-timeline: view();
+    animation-range: entry calc(45% + var(--i, 0) * 8%) entry calc(95% + var(--i, 0) * 8%);
+  }
+}
+
+
+/* ---------------------------------------------------------------
+   About page: text reveal, page-turn book, scoreboard, rules, badges,
+   clocks.
+   --------------------------------------------------------------- */
+/* Intro words brighten one after another on the paragraph's timeline. */
+.fw-tr { view-timeline-name: --fw-tr; }
+.fw-tr-word { opacity: 0.22; }
+@keyframes fw-tr-word { to { opacity: 1; } }
+@supports (animation-timeline: view()) {
+  .fw-tr-word {
+    animation: fw-tr-word linear both;
+    animation-timeline: view();
+    animation-range: entry calc(20% + var(--i, 0) / var(--n, 40) * 70%) entry calc(40% + var(--i, 0) / var(--n, 40) * 70%);
+  }
+}
+@supports not (animation-timeline: view()) { .fw-tr-word { opacity: 1; } }
+
+/* A phone-width rail: swipe sideways, no visible scrollbar. */
+.fw-xscroll {
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: 1.25rem;
+  scrollbar-width: none;
+  touch-action: pan-x pan-y;
+}
+.fw-xscroll::-webkit-scrollbar { display: none; }
+
+/* The drafting table reserves less room under the cards on a phone. */
+@media (max-width: 1023px) {
+  .fw-stage { padding-block: 1.5rem 4.5rem; }
+}
+
+/* Project brief dialog: form controls, entrance, pending spinner. */
+.fw-input {
+  display: block;
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-line);
+  background: var(--color-ground);
+  padding: 0.75rem 0.9rem;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--color-ink);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.fw-input::placeholder { color: color-mix(in oklab, var(--color-muted) 80%, transparent); }
+.fw-input:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-accent) 18%, transparent);
+}
+select.fw-input { appearance: none; padding-right: 2.25rem; background-image: none; }
+@keyframes fw-modal-veil { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fw-modal-panel {
+  from { opacity: 0; transform: translate3d(0, 16px, 0) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fw-spinner { to { transform: rotate(1turn); } }
+.fw-modal-veil { animation: fw-modal-veil 180ms ease-out both; }
+.fw-modal-panel { animation: fw-modal-panel 260ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.fw-spinner { animation: fw-spinner 700ms linear infinite; }
+
+/* Book: pages stacked; page i turns away over its slice of the runway. */
+.fw-book::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(48rem 34rem at 72% 45%, color-mix(in oklab, var(--color-accent) 9%, transparent), transparent 72%),
+    radial-gradient(30rem 24rem at 8% 12%, color-mix(in oklab, var(--color-accent) 5%, transparent), transparent 70%);
+}
+.fw-book-runway { view-timeline-name: --fw-book; position: relative; }
+.fw-book-index { list-style: none; }
+.fw-book-idx-bar { transform: scaleY(0); }
+.fw-book-spine-fill { transform: scaleY(0); }
+@keyframes fw-book-spine { to { transform: scaleY(1); } }
+@keyframes fw-book-rise {
+  from { transform: translate3d(0, 22px, 0) scale(0.965); }
+  to { transform: none; }
+}
+@keyframes fw-book-idx { 0%, 100% { opacity: 0.4; } 10%, 90% { opacity: 1; } }
+@keyframes fw-book-idx-last { 0% { opacity: 0.4; } 10%, 100% { opacity: 1; } }
+@keyframes fw-book-idx-bar { 0%, 100% { transform: scaleY(0); } 10%, 90% { transform: scaleY(1); } }
+@keyframes fw-book-idx-bar-last { 0% { transform: scaleY(0); } 10%, 100% { transform: scaleY(1); } }
+.fw-book-pages { perspective: 1400px; }
+.fw-book-page { transform-style: preserve-3d; }
+.fw-book-page + .fw-book-page { margin-top: 1.25rem; }
+.fw-book-num { color: color-mix(in oklab, var(--color-accent) 8%, transparent); }
+.fw-book-bar { transform: scaleX(0); }
+@keyframes fw-book-turn {
+  0% { transform: rotateX(0) translate3d(0, 0, 0); opacity: 1; }
+  100% { transform: rotateX(-75deg) translate3d(0, -12%, 60px); opacity: 0; }
+}
+@keyframes fw-book-under {
+  from { transform: translate3d(0, calc(var(--i, 0) * 14px), 0) scale(calc(1 - var(--i, 0) * 0.04)); }
+  to { transform: none; }
+}
+@keyframes fw-book-bar { to { transform: scaleX(1); } }
+@media (min-width: 1024px) {
+  @supports (animation-timeline: view()) {
+    .fw-book-runway { height: calc(var(--n, 4) * 60vh + 40vh); }
+    .fw-book-stage {
+      position: sticky;
+      top: 4rem;
+      display: flex;
+      align-items: center;
+      min-height: min(44rem, calc(100vh - 4rem));
+      min-height: min(44rem, calc(100svh - 4rem));
+    }
+    .fw-book-pages { align-content: center; }
+    .fw-book-idx {
+      animation: fw-book-idx linear both;
+      animation-timeline: --fw-book;
+      animation-range:
+        contain calc(var(--i, 0) / var(--n, 4) * 100%)
+        contain calc((var(--i, 0) + 1) / var(--n, 4) * 100%);
+    }
+    .fw-book-idx:last-child { animation-name: fw-book-idx-last; }
+    .fw-book-idx-bar {
+      animation: fw-book-idx-bar linear both;
+      animation-timeline: --fw-book;
+      animation-range:
+        contain calc(var(--i, 0) / var(--n, 4) * 100%)
+        contain calc((var(--i, 0) + 1) / var(--n, 4) * 100%);
+    }
+    .fw-book-idx:last-child .fw-book-idx-bar { animation-name: fw-book-idx-bar-last; }
+    .fw-book-pages { display: grid; }
+    .fw-book-page { grid-area: 1 / 1; margin-top: 0 !important; transform-origin: 50% 0; }
+    .fw-book-page { z-index: calc(var(--n, 4) - var(--i, 0)); }
+    .fw-book-page + .fw-book-page {
+      animation: fw-book-rise cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-timeline: --fw-book;
+      animation-range:
+        contain calc((var(--i, 0) - 1) / var(--n, 4) * 100% + 4%)
+        contain calc(var(--i, 0) / var(--n, 4) * 100% + 2%);
+    }
+    .fw-book-spine-fill {
+      animation: fw-book-spine linear both;
+      animation-timeline: --fw-book;
+      animation-range: contain 0% contain 100%;
+    }
+    .fw-book-page > article {
+      animation: fw-book-turn cubic-bezier(0.4, 0, 0.6, 1) both;
+      animation-timeline: --fw-book;
+      animation-range:
+        contain calc(var(--i, 0) / var(--n, 4) * 100% + 4%)
+        contain calc((var(--i, 0) + 1) / var(--n, 4) * 100% - 4%);
+      transform-origin: 50% 0;
+      backface-visibility: hidden;
+    }
+    .fw-book-page:last-child > article { animation: none; }
+    .fw-book-bar {
+      animation: fw-book-bar linear both;
+      animation-timeline: --fw-book;
+      animation-range: contain 0% contain 100%;
+    }
+  }
+}
+
+/* Scoreboard tiles: rise in turn, ring closes, bar fills. */
+.fw-board2 { view-timeline-name: --fw-board2; }
+.fw-stat-bar { transform: scaleX(1); }
+@keyframes fw-stat-in { from { opacity: 0; transform: translate3d(0, 28px, 0); } to { opacity: 1; transform: none; } }
+@keyframes fw-stat-bar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@supports (animation-timeline: view()) {
+  .fw-stat {
+    animation: fw-stat-in cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-timeline: --fw-board2;
+    animation-range: entry calc(10% + var(--i, 0) * 8%) entry calc(45% + var(--i, 0) * 8%);
+  }
+  .fw-stat-bar {
+    animation: fw-stat-bar cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-timeline: --fw-board2;
+    animation-range: entry calc(35% + var(--i, 0) * 8%) entry calc(70% + var(--i, 0) * 8%);
+  }
+}
+
+/* Rules: slide in from alternate sides with a twist; ghost numeral
+   slides on hover; title underlines itself. */
+.fw-rule-num {
+  color: color-mix(in oklab, var(--color-accent) 8%, transparent);
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-rule-card:hover .fw-rule-num { transform: translate3d(-14px, 8px, 0) rotate(-6deg); }
+.fw-rule-title {
+  background: linear-gradient(var(--color-accent), var(--color-accent)) no-repeat 0 100% / 0 2px;
+  transition: background-size 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-rule-card:hover .fw-rule-title { background-size: 100% 2px; }
+@keyframes fw-rule-in {
+  from { opacity: 0; transform: translate3d(calc(var(--dir, 1) * 60px), 0, 0) rotate(calc(var(--dir, 1) * 2deg)); }
+  to { opacity: 1; transform: none; }
+}
+@supports (animation-timeline: view()) {
+  .fw-rule {
+    animation: fw-rule-in cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 60%;
+  }
+}
+
+/* Badges: icon tile spins on hover; band draws in on hover. */
+.fw-badge-icon { transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+.fw-badge:hover .fw-badge-icon { transform: rotate(90deg) scale(1.08); animation-play-state: paused; }
+.fw-badge-band { transform: scaleX(0); transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+.fw-badge:hover .fw-badge-band { transform: scaleX(1); }
+
+/* Clocks: hands from --h/--m, second hand sweeps 60s; rows slide in. */
+.fw-clock-hour { transform: translate(-50%, -100%) rotate(var(--h, 0deg)); }
+.fw-clock-min { transform: translate(-50%, -100%) rotate(var(--m, 0deg)); }
+@keyframes fw-clock-sec { from { transform: translate(-50%, -100%) rotate(0deg); } to { transform: translate(-50%, -100%) rotate(360deg); } }
+.fw-clock-sec { animation: fw-clock-sec 60s linear infinite; }
+.fw-tz-bar { transform: scaleX(1); }
+@keyframes fw-tz-bar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@supports (animation-timeline: view()) {
+  .fw-tz-bar {
+    animation: fw-tz-bar cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 100%;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Reduced motion for everything above.
+   --------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+  .fw-mark-in,
+  .fw-mark-float,
+  .fw-drift,
+  .fw-frame-track,
+  .fw-wall-row [data-marquee-track] {
+    animation: none;
+  }
+  .fw-frame-view {
+    overflow-y: auto;
+  }
+  .fw-deck-face,
+  .fw-deck-face::after,
+  .fw-aurora > span,
+  .fw-floor-plane,
+  .fw-sweep,
+  .fw-cue-bar,
+  .fw-node,
+  .fw-ring,
+  .fw-log-cursor,
+  .fw-caption {
+    animation: none;
+  }
+  .fw-hs-runway { height: auto; }
+  .fw-hs-stage { position: static; height: auto; overflow: visible; }
+  .fw-hs-track { animation: none; }
+  .fw-hs-scroller { overflow-x: auto; }
+  .fw-hs-bar { animation: none; transform: none; }
+  .fw-conveyor-pulse,
+  .fw-ping-ring { animation: none; }
+  .fw-flip-inner { transition: none; }
+  .fw-bubble-in,
+  .fw-typing > span,
+  .fw-chip-live::after { animation: none; }
+  .fw-code-line,
+  .fw-code-toast { animation: none; opacity: 1; }
+  .fw-kit-card, .fw-kit-bar, .fw-kit-check, .fw-kit-ring::after,
+  .fw-plan-featured, .fw-plan-featured::after,
+  .fw-board-bar, .fw-stamp, .fw-board-no { animation: none; }
+  .fw-plan-tick { transform: none; opacity: 1; transition: none; }
+  .fw-hero-tick, .fw-hero-tick-box, .fw-hero-scrub, .fw-hero-play, .fw-route-pulse,
+  .fw-step-card, .fw-step-dot, .fw-step-ping, .fw-step-chip, .fw-step-veil, .fw-step-done, .fw-step-dot-done, .fw-step-meter, .fw-week-tile, .fw-week-head,
+  .fw-stamp-mark, .fw-sign-path { animation: none; }
+  .fw-stamp-mark { opacity: 0.95; transform: rotate(-8deg); }
+  .fw-tr-word { animation: none; opacity: 1; }
+  .fw-book-runway { height: auto; }
+  .fw-book-stage { position: static; min-height: 0; }
+  .fw-book-pages { display: block; }
+  .fw-book-page + .fw-book-page { margin-top: 1.25rem !important; }
+  .fw-book-idx-bar, .fw-book-spine-fill { transform: none; }
+  .fw-modal-veil, .fw-modal-panel { animation-duration: 1ms; }
+  .fw-spinner { animation: none; }
+  .fw-book-page, .fw-book-page > article, .fw-book-bar, .fw-book-idx, .fw-book-idx-bar, .fw-book-spine-fill, .fw-stat, .fw-stat-bar, .fw-rule, .fw-tz-bar, .fw-clock-sec { animation: none; }
+  .fw-book-bar { transform: none; }
+  .fw-sign-path { stroke-dashoffset: 0; }
+
+  .fw-ghost-ticker [data-marquee-track],
+  .fw-svc-visual,
+  .fw-cmp-row { animation: none; }
+  .fw-rail, .fw-rail-label, .fw-inbox-item { transition: none; }
+  .fw-word-in,
+  .fw-pop,
+  .fw-takeover-disc,
+  .fw-thread-line,
+  .fw-ghost { animation: none; }
+  .fw-takeover-disc { opacity: 1; transform: scale(1.2); }
+  .fw-thread-line { transform: none; }
+  .fw-tab-pill { transition: none; }
+  .fw-tiltcard { transform: none; transition: none; }
+  .fw-flow-item { animation: none; opacity: 1; transform: none; -webkit-box-reflect: none; }
+  .fw-project-cover { transition: none; }
+  .fw-project-open { opacity: 1; transform: none; }
+  .fw-log-line {
+    animation: none;
+    opacity: 1;
+  }
+  .fw-ring {
+    opacity: 0;
+  }
+  .fw-deck-card {
+    position: static;
+  }
+  .fw-plane {
+    animation: none;
+    transform: none;
+    width: 100%;
+    margin-left: 0;
+  }
+  .fw-wall-grey,
+  .fw-wall-open,
+  .fw-tint-wash,
+  .fw-wall-card {
+    transition: none;
   }
 }

@@ -1,93 +1,112 @@
+import type { CSSProperties } from "react";
+import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/motion/reveal";
-import { Stagger } from "@/components/motion/stagger";
 import { BorderBeam } from "@/components/ui/border-beam";
-import { UiMock } from "@/components/sections/shared/ui-mock";
+import { LazyVideo } from "@/components/motion/lazy-video";
+import { ServiceVisual } from "@/components/sections/services/service-visual";
 import { services } from "@/content/site/home";
-import { cn } from "@/lib/utils";
+
+/**
+ * Services as a deck of cards. Every card is sticky under the nav, so as
+ * the page scrolls each new service deals onto the pile and the one
+ * beneath sinks back a step: smaller, quieter, still visible at its
+ * offset edge. The sink is a scroll-driven keyframe (transform + opacity)
+ * over the deck's own view timeline, sliced per card, so it tracks the
+ * scrollbar exactly. Without scroll-driven support the cards still
+ * stack; they just don't shrink.
+ *
+ * Each card carries one brand tint as a soft wash in its corner, drawn
+ * from the theme tokens, so the pile reads as one family.
+ */
+const TINTS = [
+  "var(--color-cyan)",
+  "var(--color-violet)",
+  "var(--color-indigo)",
+  "var(--color-accent)",
+  "var(--color-cyan)",
+  "var(--color-violet)",
+  "var(--color-indigo)",
+] as const;
 
 export function Services() {
-  const featured = services.items.find((item) => item.featured);
-  const rest = services.items.filter((item) => !item.featured);
+  const n = services.items.length;
 
   return (
     <section id="services" className="py-24 lg:py-32">
       <Container>
         <Reveal>
-          <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-10">
             <div className="flex flex-col gap-4">
               <p className="text-xs font-medium uppercase tracking-[0.16em] text-accent">
                 {services.eyebrow}
               </p>
-              <h2 className="max-w-[16ch] whitespace-pre-line text-[clamp(2rem,4vw,3.25rem)] font-bold leading-[1.06] tracking-[-0.025em]">
+              <h2 className="whitespace-nowrap text-[clamp(1.5rem,2.7vw,2.5rem)] font-bold leading-[1.06] tracking-[-0.025em] max-sm:whitespace-normal">
                 {services.title}
               </h2>
             </div>
-            <p className="max-w-[42ch] leading-relaxed text-muted">{services.intro}</p>
           </div>
         </Reveal>
 
-        <div className="mt-14 grid gap-5 lg:grid-cols-3">
-          {featured ? (
-            <Reveal className="lg:col-span-2">
-              <article className="relative flex h-full min-h-[420px] flex-col justify-end overflow-hidden rounded-tile border border-line bg-surface p-8">
-                <BorderBeam />
-                <div className="pointer-events-none absolute inset-x-8 -top-6 h-[300px] opacity-90">
-                  <div className="h-full w-full [mask-image:linear-gradient(to_bottom,black_55%,transparent)]">
-                    <UiMock className="shadow-card" />
+        <ol className="fw-deck mt-14" style={{ "--n": n } as CSSProperties}>
+          {services.items.map((item, i) => {
+            const number = String(i + 1).padStart(2, "0");
+            const image = "image" in item ? item.image : null;
+            return (
+              <li
+                key={item.title}
+                className="fw-deck-card"
+                style={{ "--i": i, "--tint": TINTS[i % TINTS.length] } as CSSProperties}
+              >
+                <article className="fw-deck-face relative grid overflow-hidden rounded-tile lg:min-h-[30rem] border border-line bg-surface shadow-lift lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+                  {i === 0 ? <BorderBeam /> : null}
+
+                  <div className="relative flex flex-col justify-between gap-10 p-8 lg:p-12">
+                    <span
+                      aria-hidden="true"
+                      className="fw-deck-num pointer-events-none absolute -left-3 -top-8 select-none text-[9rem] font-bold leading-none tracking-[-0.06em] lg:-top-12 lg:text-[13rem]"
+                    >
+                      {number}
+                    </span>
+                    <div className="relative flex flex-col gap-5">
+                      <p className="text-xs font-medium uppercase tracking-[0.16em] text-accent">
+                        {number} {services.countLabel} {String(n).padStart(2, "0")}
+                      </p>
+                      <h3 className="text-[clamp(1.5rem,2.5vw,2.125rem)] font-bold leading-[1.08] tracking-[-0.03em]">
+                        {item.title}
+                      </h3>
+                      <p className="max-w-[46ch] text-[1.0625rem] leading-relaxed text-muted">
+                        {item.body}
+                      </p>
+                    </div>
+                    <a
+                      href={`/services/#${number}`}
+                      className="group relative inline-flex w-fit items-center gap-2 text-sm font-semibold text-ink"
+                    >
+                      {services.open}
+                      <ArrowRight
+                        aria-hidden="true"
+                        className="size-4 text-accent transition-transform group-hover:translate-x-1"
+                      />
+                    </a>
                   </div>
-                </div>
-                <div className="relative flex flex-col gap-3">
-                  <h3 className="text-[2rem] font-semibold tracking-tight">
-                    {featured.title}
-                  </h3>
-                  <p className="max-w-[52ch] leading-relaxed text-muted">
-                    {featured.body}
-                  </p>
-                </div>
-              </article>
-            </Reveal>
-          ) : null}
 
-          <Stagger className="grid gap-5 lg:row-span-2" itemClassName="h-full">
-            {rest.slice(0, 2).map((item) => (
-              <ServiceTile key={item.title} title={item.title} body={item.body} />
-            ))}
-          </Stagger>
-
-          <Stagger
-            className="grid gap-5 sm:grid-cols-2 lg:col-span-2"
-            itemClassName="h-full"
-          >
-            {rest.slice(2).map((item) => (
-              <ServiceTile key={item.title} title={item.title} body={item.body} />
-            ))}
-          </Stagger>
-        </div>
+                  <div className="fw-deck-media relative flex items-center p-4 pt-0 lg:p-6 lg:pl-0">
+                    {i === 0 ? (
+                      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-card border border-line bg-surface shadow-card">
+                        <LazyVideo src="/videos/saas-animation-stripe.mp4" />
+                      </div>
+                    ) : (
+                      <ServiceVisual kind={item.visual ?? ""} videoSrc={item.videoSrc} image={image} />
+                    )}
+                  </div>
+                </article>
+              </li>
+            );
+          })}
+        </ol>
       </Container>
     </section>
   );
 }
 
-function ServiceTile({
-  title,
-  body,
-  className,
-}: {
-  title: string;
-  body: string;
-  className?: string;
-}) {
-  return (
-    <article
-      className={cn(
-        "flex h-full min-h-[200px] flex-col justify-end gap-2.5 rounded-tile border border-line bg-surface p-7",
-        "transition-colors hover:border-accent/40",
-        className,
-      )}
-    >
-      <h3 className="text-xl font-semibold tracking-tight">{title}</h3>
-      <p className="max-w-[38ch] text-[0.9375rem] leading-relaxed text-muted">{body}</p>
-    </article>
-  );
-}

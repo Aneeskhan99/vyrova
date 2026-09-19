@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 
 export const SITE = {
-  name: "FrameWell",
-  url: "https://framewell.com",
-  tagline: "SaaS animation, video and software, from one studio.",
-  email: "hello@framewell.com",
+  name: "VYROVA",
+  url: "https://vyrova.com",
+  tagline: "Visuals that move. Technology that works.",
+  email: "info@vyrova.co.uk",
 } as const;
 
 export function pageMetadata(input: {
@@ -23,11 +23,13 @@ export function pageMetadata(input: {
       url,
       siteName: SITE.name,
       type: "website",
+      images: [{ url: "/og.png", width: 1200, height: 630, alt: `${SITE.name} — ${SITE.tagline}` }],
     },
     twitter: {
       card: "summary_large_image",
       title: input.title,
       description: input.description,
+      images: ["/og.png"],
     },
   };
 }
@@ -39,6 +41,7 @@ export const organizationJsonLd = {
   name: SITE.name,
   url: SITE.url,
   email: SITE.email,
+  logo: `${SITE.url}/brand/vyrova-mark.png`,
   description: SITE.tagline,
   address: {
     "@type": "PostalAddress",

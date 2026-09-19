@@ -10,7 +10,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata = pageMetadata({
   title: "About",
   description:
-    "FrameWell is a Dubai studio for SaaS animation, explainer video, WordPress, software and editing — built first as an in-house team, now open to other products.",
+    "VYROVA is a Dubai studio for SaaS animation, explainer video, WordPress, software and editing — built first as an in-house team, now open to other products.",
   path: "/about",
 });
 

@@ -1,4 +1,5 @@
 import { Hero } from "@/components/sections/services/hero";
+import { Rail } from "@/components/sections/services/rail";
 import { Detail } from "@/components/sections/services/detail";
 import { Deliverables } from "@/components/sections/services/deliverables";
 import { Packages } from "@/components/sections/services/packages";
@@ -18,6 +19,7 @@ export default function ServicesPage() {
   return (
     <>
       <Hero />
+      <Rail />
       <Detail />
       <Deliverables />
       <Packages />

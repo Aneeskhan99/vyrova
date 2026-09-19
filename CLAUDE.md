@@ -1,6 +1,8 @@
-# FrameWell website
+# VYROVA website
 
-Marketing site for FrameWell, a SaaS animation and development studio.
+Marketing site for VYROVA — website UI/UX, brand identity, SaaS animation,
+explainer film, WordPress, software and video editing. Tagline: "Visuals that
+move. Technology that works."
 Next.js 15 App Router, TypeScript strict, Tailwind 4. Static export only.
 Motion (framer-motion) is available, but CSS is the default — see the
 animation rules below. That split is deliberate: it keeps the hero and

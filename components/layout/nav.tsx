@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import { Container } from "./container";
 import { Logo } from "./logo";
 import { MagneticButton } from "@/components/ui/magnetic-button";
+import { MobileNav } from "./mobile-nav";
 import { NAV_LINKS } from "@/content/site/nav";
 
 export function Nav() {
@@ -10,10 +11,10 @@ export function Nav() {
       <Container>
         <nav
           aria-label="Main"
-          className="flex h-20 items-center justify-between gap-6"
+          className="relative flex h-16 items-center justify-between gap-6 lg:h-20"
         >
-          <a href="/" aria-label="FrameWell home">
-            <Logo />
+          <a href="/" aria-label="VYROVA home">
+            <Logo animate id="nav" />
           </a>
 
           <ul className="hidden items-center gap-9 md:flex">
@@ -29,10 +30,12 @@ export function Nav() {
             ))}
           </ul>
 
-          <MagneticButton href="#contact">
+          <MagneticButton href="#contact" className="hidden md:inline-flex">
             Start a project
             <ArrowRight aria-hidden="true" className="size-4" />
           </MagneticButton>
+
+          <MobileNav />
         </nav>
       </Container>
     </header>

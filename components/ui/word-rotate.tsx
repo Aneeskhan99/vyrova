@@ -62,6 +62,14 @@ export function WordRotate({ words, interval = 2400, className }: WordRotateProp
   }
 
   const width = widths[index];
+  // Until the measuring pass has run (server render, and the first paint
+  // before hydration), there is no width to give the wrapper. Laying the
+  // word out absolutely at that point collapses the wrapper to zero and
+  // the rest of the sentence prints straight over the word. So the word
+  // stays in normal flow until a real measurement exists, and only then
+  // switches to the absolute + fixed-width mode that lets the line
+  // reflow smoothly between words.
+  const measured = typeof width === "number" && width > 0;
 
   return (
     <>
@@ -95,23 +103,35 @@ export function WordRotate({ words, interval = 2400, className }: WordRotateProp
 
       <span
         className={cn("relative inline-block align-bottom", className)}
-        style={{
-          width: width ? `${width}px` : undefined,
-          transition: "width 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-        }}
+        style={
+          measured
+            ? {
+                width: `${width}px`,
+                transition: "width 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+              }
+            : undefined
+        }
       >
-        {/* Absolute so the word itself never sets the wrapper width —
-            the measured value above is the single source of truth. */}
+        {/* Once measured, absolute so the word itself never sets the
+            wrapper width — the measured value above is the single source
+            of truth. Before that it is in flow, so it still occupies its
+            own space and nothing overlaps it. */}
         <span
           key={index}
-          className="fw-word absolute left-0 top-0 whitespace-nowrap"
+          className={cn(
+            "fw-word whitespace-nowrap",
+            measured ? "absolute left-0 top-0" : "inline-block",
+          )}
         >
           {words[index]}
         </span>
-        {/* Keeps the line box the right height without affecting width. */}
-        <span aria-hidden="true" className="invisible">
-          &nbsp;
-        </span>
+        {/* Keeps the line box the right height without affecting width.
+            Only needed while the word is out of flow. */}
+        {measured ? (
+          <span aria-hidden="true" className="invisible">
+            &nbsp;
+          </span>
+        ) : null}
       </span>
     </>
   );

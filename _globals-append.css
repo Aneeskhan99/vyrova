@@ -1,0 +1,193 @@
+
+/* ===============================================================
+   VYROVA — brand motion and the design portfolio
+   =============================================================== */
+
+/* ---------------------------------------------------------------
+   Cross-document view transitions. Every page-to-page navigation
+   cross-fades, and any element that shares a view-transition-name
+   across the two pages morphs from one to the other: the logo holds
+   still, a clicked work card grows into the project's browser frame.
+   Zero JavaScript. Browsers without support simply navigate.
+   --------------------------------------------------------------- */
+@view-transition {
+  navigation: auto;
+}
+.fw-vt-logo {
+  view-transition-name: vy-logo;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.36s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+::view-transition-group(vy-logo) {
+  animation-duration: 0.001s;
+}
+::view-transition-group(*) {
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---------------------------------------------------------------
+   The mark building itself on load: back arm, fold, front arm, play.
+   Runs once per page load on the nav lockup only; the view
+   transition keeps the logo continuous between pages after that.
+   --------------------------------------------------------------- */
+@keyframes fw-mark-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.fw-mark-in path {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: fw-mark-pop 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.fw-mark-in .fw-mark-back { animation-delay: 0s; }
+.fw-mark-in .fw-mark-fold { animation-delay: 0.12s; }
+.fw-mark-in .fw-mark-front { animation-delay: 0.08s; }
+.fw-mark-in .fw-mark-play { animation-delay: 0.26s; }
+
+/* ---------------------------------------------------------------
+   The Wall. Two marquee rows; the second runs in reverse. Each cover
+   is drawn twice: colour underneath, a greyscale copy on top that
+   fades away on hover. Only opacity animates (M-01); the filter on
+   the grey copy is static.
+   --------------------------------------------------------------- */
+.fw-wall-row [data-marquee-track] {
+  animation: fw-marquee var(--dur, 60s) linear infinite;
+}
+.fw-wall-row.is-reverse [data-marquee-track] {
+  animation-direction: reverse;
+}
+.fw-wall-grey {
+  filter: grayscale(1) contrast(0.96);
+  opacity: 0.92;
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-wall-card:hover .fw-wall-grey,
+.fw-wall-card:focus-visible .fw-wall-grey {
+  opacity: 0;
+}
+.fw-wall-card {
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fw-wall-card:hover {
+  transform: translate3d(0, -6px, 0);
+}
+
+/* ---------------------------------------------------------------
+   Project cards take on their own project's colour when hovered.
+   --tint is set per card from the sampled palette; the wash is a
+   separate layer whose opacity animates.
+   --------------------------------------------------------------- */
+.fw-tint-wash {
+  background: linear-gradient(160deg, var(--tint, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.group\/card:hover .fw-tint-wash,
+.fw-tilt:hover .fw-tint-wash {
+  opacity: 0.22;
+}
+
+/* ---------------------------------------------------------------
+   The scrolling browser frame on a design project page.
+   The runway is tall; the frame sticks inside it; the design image
+   travels upward on a view timeline scoped to the runway. Where
+   scroll-driven animations are unsupported the frame scrolls
+   natively instead, which is the honest fallback.
+   --------------------------------------------------------------- */
+.fw-frame-scope {
+  timeline-scope: --vy-runway;
+}
+.fw-frame-runway {
+  view-timeline-name: --vy-runway;
+  view-timeline-axis: block;
+  min-height: calc(var(--pages, 2.4) * 72vh);
+}
+.fw-frame-sticky {
+  position: sticky;
+  top: 6.5rem;
+}
+.fw-frame-view {
+  height: 68vh;
+  max-height: 760px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+@supports (animation-timeline: view()) {
+  .fw-frame-view {
+    overflow: hidden;
+  }
+  .fw-frame-track {
+    animation: fw-frame-scroll linear both;
+    animation-timeline: --vy-runway;
+    animation-range: cover 6% cover 94%;
+    will-change: transform;
+  }
+  .fw-frame-hint {
+    opacity: 1;
+  }
+}
+@keyframes fw-frame-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    /* the image's own height minus the visible window */
+    transform: translate3d(0, calc(-100% + min(68vh, 760px)), 0);
+  }
+}
+
+/* ---------------------------------------------------------------
+   Scroll-driven section entrances, on top of Reveal. Where view
+   timelines exist, a .fw-drift element rises as it enters the
+   viewport, tied to scroll position rather than a timer.
+   --------------------------------------------------------------- */
+@supports (animation-timeline: view()) {
+  .fw-drift {
+    animation: fw-drift linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 60%;
+  }
+}
+@keyframes fw-drift {
+  from {
+    opacity: 0.2;
+    transform: translate3d(0, 28px, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* ---------------------------------------------------------------
+   Reduced motion for everything above.
+   --------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+  .fw-mark-in path,
+  .fw-drift,
+  .fw-frame-track,
+  .fw-wall-row [data-marquee-track] {
+    animation: none;
+  }
+  .fw-frame-view {
+    overflow-y: auto;
+  }
+  .fw-wall-grey,
+  .fw-tint-wash,
+  .fw-wall-card {
+    transition: none;
+  }
+}

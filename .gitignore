@@ -7,3 +7,10 @@ out
 
 # TypeScript incremental build cache
 *.tsbuildinfo
+_to_delete/
+
+# Stray master exports, not used by the site
+/FrameWell Showreel v2.mp4
+/FrameWell Showreel v3.mp4
+/FrameWell Showreel v4.mp4
+/_src.tgz
