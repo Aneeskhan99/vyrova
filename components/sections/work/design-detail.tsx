@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Reveal } from "@/components/motion/reveal";
@@ -23,13 +24,13 @@ export function DesignDetail({ project }: { project: DesignProject }) {
     <>
       <section className="pt-10 lg:pt-14">
         <Container>
-          <a
+          <Link
             href="/work/"
             className="fw-rise inline-flex items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-ink"
           >
             <ArrowLeft aria-hidden="true" className="size-4" />
             {designDetail.backLabel}
-          </a>
+          </Link>
 
           <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">
             <div className="flex flex-col gap-6 lg:sticky lg:top-28 lg:self-start">

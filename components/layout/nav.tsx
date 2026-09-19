@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Container } from "./container";
 import { Logo } from "./logo";
@@ -13,9 +14,9 @@ export function Nav() {
           aria-label="Main"
           className="relative flex h-16 items-center justify-between gap-6 lg:h-20"
         >
-          <a href="/" aria-label="VYROVA home">
+          <Link href="/" aria-label="VYROVA home">
             <Logo animate id="nav" />
-          </a>
+          </Link>
 
           <ul className="hidden items-center gap-9 md:flex">
             {NAV_LINKS.map((link) => (
