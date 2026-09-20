@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/container";
-import { Gallery } from "@/components/sections/work/gallery";
 import { hero } from "@/content/site/work";
 
 /**
@@ -46,10 +45,6 @@ export function Hero() {
           <p className="fw-rise fw-d2 max-w-none text-[0.9375rem] leading-relaxed text-muted lg:text-lg">
             {hero.intro}
           </p>
-        </div>
-
-        <div className="fw-rise fw-d3 mt-8 lg:mt-12">
-          <Gallery />
         </div>
       </Container>
     </section>

@@ -20,12 +20,15 @@ export const cardLabels = {
   play: "Hover to play",
 } as const;
 
-/** The cover-flow carousel under the filter tabs. */
-export const flow = {
-  prev: "Previous",
-  next: "Next",
+/** The index of every project, and the preview that reads alongside it. */
+export const index = {
+  eyebrow: "The index",
+  filterLabel: "Filter projects by service",
+  hint: "Hover a line to see the work",
+  play: "Watch the film",
+  tapHint: "Tap once to preview, again to open",
   of: "of",
-  hint: "Scroll sideways, use the arrows, or swipe",
+  empty: "Nothing filed under this service yet.",
 } as const;
 
 export const FILTERS = [

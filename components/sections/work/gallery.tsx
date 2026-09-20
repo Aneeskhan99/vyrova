@@ -1,287 +1,362 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { ProjectCard, type Project } from "@/components/sections/shared/project-card";
-import { FILTERS, FILTER_QUERY, flow, projects } from "@/content/site/work";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
+import { ArrowRight, ArrowUpRight, Play } from "lucide-react";
+import { Container } from "@/components/layout/container";
+import { FilmTile } from "@/components/motion/film-tile";
+import {
+  FILTERS,
+  FILTER_QUERY,
+  cardLabels,
+  index as copy,
+  projects,
+} from "@/content/site/work";
 import {
   DESIGN_KIND,
   designCover,
   designProjects,
 } from "@/content/site/design-projects";
+import { posterFor } from "@/lib/media";
 import { cn } from "@/lib/utils";
 
 /**
- * Filter tabs and the grid they filter. One client component rather
- * than two, because the tabs and the grid share a single piece of state.
+ * Every project as an index: a set of typographic lines on the left, one
+ * preview frame on the right. Reading a line lights it and swaps the
+ * frame; opening it is the same click it always was.
  *
- * The delivered website designs join the hand-listed films here, each as
- * an internal card whose cover morphs into its project page.
+ * This replaced a cover-flow carousel that mounted all twenty one cards
+ * twice for an endless loop, each one tilting on its own view timeline
+ * under a mirrored reflection. Forty two promoted layers, every one
+ * painted twice, is what made this page crawl while the rest of the site
+ * stayed quick. Here nothing is duplicated, no card is promoted, and the
+ * only cover ever fetched is the one someone actually looked at — the
+ * lines themselves are text, so a filter change costs nothing.
  *
  * `?filter=<key>` in the URL preselects a tab, so the Wall's "see all
  * design work" link lands on the design view. Read once on mount; static
  * export has no server to read the query for us.
  */
-const ALL: readonly Project[] = [
-  ...projects.map((p) => ({
-    name: p.name,
-    note: p.note,
-    category: p.category,
-    videoSrc: "videoSrc" in p ? p.videoSrc : null,
-    image: "image" in p ? p.image : null,
-    href: "href" in p ? p.href : null,
-  })),
+type Row = {
+  name: string;
+  note: string;
+  category: string;
+  /** Still shown in the frame: a screenshot, or a film's poster. */
+  cover: string | null;
+  videoSrc: string | null;
+  href: string | null;
+  internal: boolean;
+  tint: string | null;
+};
+
+const ALL: readonly Row[] = [
+  ...projects.map((p) => {
+    const videoSrc = "videoSrc" in p ? p.videoSrc : null;
+    const image = "image" in p ? p.image : null;
+    return {
+      name: p.name,
+      note: p.note,
+      category: p.category,
+      cover: image ?? (videoSrc ? posterFor(videoSrc) : null),
+      videoSrc,
+      href: "href" in p ? p.href : null,
+      internal: false,
+      tint: null,
+    };
+  }),
   ...designProjects.map((p) => ({
     name: p.client,
     note: `${DESIGN_KIND} · ${p.sector}`,
     category: DESIGN_KIND,
-    image: designCover(p.slug),
+    cover: designCover(p.slug),
+    videoSrc: null,
     href: `/work/${p.slug}/`,
     internal: true,
     tint: p.palette[0],
-    vt: `vy-${p.slug}`,
   })),
 ];
 
 export function Gallery() {
   const [active, setActive] = useState<string>(FILTERS[0]);
+  const [at, setAt] = useState(0);
+  /** Covers already looked at, so the cross-fade has two layers to work with. */
+  const [seen, setSeen] = useState<readonly string[]>([]);
+  const [filmOn, setFilmOn] = useState(false);
   const list = useRef<HTMLDivElement>(null);
   const [pill, setPill] = useState<{ x: number; w: number } | null>(null);
-  const track = useRef<HTMLUListElement>(null);
-  const [current, setCurrent] = useState(0);
-  const hold = useRef(false);
-  const onScreen = useRef(false);
-  const idle = useRef<number | null>(null);
+  /** Touch: the first tap previews, the second opens. */
+  const coarse = useRef(false);
+
+  const visible =
+    active === FILTERS[0] ? ALL : ALL.filter((row) => row.category === active);
+  const n = visible.length;
+  const current = n ? visible[Math.min(at, n - 1)] : null;
 
   // The sliding pill: measure the active tab and move one highlight
-  // behind it (transform only), instead of restyling each button.
+  // behind it (transform only), instead of restyling each button. The
+  // pill is absolutely placed inside the tab strip, and offsetLeft is
+  // already measured from the strip because the strip is the positioned
+  // ancestor — subtracting the strip's own offset, as this did, pushed
+  // the pill a page gutter to the left of the tab it was lighting.
+  //
+  // Re-measured when the strip resizes and once the web font has loaded,
+  // since both change where the tabs sit.
   useLayoutEffect(() => {
-    const el = list.current?.querySelector<HTMLButtonElement>('[aria-selected="true"]');
     const box = list.current;
-    if (!el || !box) return;
-    setPill({ x: el.offsetLeft - box.offsetLeft, w: el.offsetWidth });
+    if (!box) return;
+    const measure = () => {
+      const el = box.querySelector<HTMLButtonElement>('[aria-selected="true"]');
+      if (el) setPill({ x: el.offsetLeft, w: el.offsetWidth });
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(box);
+    document.fonts?.ready.then(measure).catch(() => {});
+    return () => observer.disconnect();
   }, [active]);
 
   useEffect(() => {
+    coarse.current = window.matchMedia("(hover: none)").matches;
     const key = new URLSearchParams(window.location.search).get("filter");
     if (!key) return;
     const match = FILTER_QUERY[key as keyof typeof FILTER_QUERY];
     if (match) setActive(match);
   }, []);
 
-  const visible =
-    active === FILTERS[0] ? ALL : ALL.filter((project) => project.category === active);
-
-  const n = visible.length;
-
-  /** Distance from one card's centre to the next, in px. */
-  function pitchOf(root: HTMLUListElement) {
-    const item = root.querySelector<HTMLElement>("[data-flow]");
-    if (!item) return 0;
-    const gap = parseFloat(getComputedStyle(root).columnGap || "0") || 24;
-    return item.offsetWidth + gap;
-  }
-
-  // The set is rendered twice. Once the scroller is inside the second
-  // copy, an instant jump back by one set keeps the ride endless with
-  // nothing visible changing — the card under the cursor is identical.
-  function settle(root: HTMLUListElement) {
-    const pitch = pitchOf(root);
-    if (!pitch || !n) return;
-    if (root.scrollLeft >= n * pitch - 1) {
-      root.scrollTo({ left: root.scrollLeft - n * pitch, behavior: "instant" });
-    }
-  }
-
-  // Which card is centred, from the scroll position, once per frame.
   useEffect(() => {
-    const root = track.current;
-    if (!root) return;
-    root.scrollTo({ left: 0 });
-    setCurrent(0);
-    let frame = 0;
-    const read = () => {
-      frame = 0;
-      const pitch = pitchOf(root);
-      if (!pitch || !n) return;
-      setCurrent(Math.round(root.scrollLeft / pitch) % n);
-    };
-    const onScroll = () => {
-      if (!frame) frame = requestAnimationFrame(read);
-    };
-    const onEnd = () => settle(root);
-    root.addEventListener("scroll", onScroll, { passive: true });
-    root.addEventListener("scrollend", onEnd);
-    return () => {
-      root.removeEventListener("scroll", onScroll);
-      root.removeEventListener("scrollend", onEnd);
-      if (frame) cancelAnimationFrame(frame);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setAt(0);
   }, [active]);
 
-  function step(dir: 1 | -1) {
-    const root = track.current;
-    if (!root) return;
-    settle(root);
-    const pitch = pitchOf(root);
-    if (!pitch || !n) return;
-    let at = Math.round(root.scrollLeft / pitch);
-    if (dir === -1 && at === 0) {
-      // Wrap backwards: jump to the same card in the second copy first.
-      root.scrollTo({ left: n * pitch, behavior: "instant" });
-      at = n;
-    }
-    root.scrollTo({ left: (at + dir) * pitch, behavior: "smooth" });
-  }
-
-  // Manual use pauses the ride for a moment.
-  function stepByHand(dir: 1 | -1) {
-    hold.current = true;
-    if (idle.current) window.clearTimeout(idle.current);
-    idle.current = window.setTimeout(() => {
-      hold.current = false;
-    }, 6000);
-    step(dir);
-  }
-
-  // The ride: one card every few seconds while on screen and not held.
+  // Keep the shown cover mounted from here on, so returning to it is a
+  // fade rather than a fetch.
+  const cover = current?.cover ?? null;
   useEffect(() => {
-    const root = track.current;
-    if (!root) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        onScreen.current = entries.some((e) => e.isIntersecting);
-      },
-      { threshold: 0.4 },
-    );
-    observer.observe(root);
-    const tick = window.setInterval(() => {
-      if (!onScreen.current || hold.current || document.hidden) return;
-      step(1);
-    }, 3200);
-    return () => {
-      observer.disconnect();
-      window.clearInterval(tick);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active]);
+    if (!cover) return;
+    setSeen((list) => (list.includes(cover) ? list : [...list, cover]));
+  }, [cover]);
+
+  // A film only starts once the line has been held for a moment, so
+  // running an eye down the list never opens six video connections.
+  const film = current?.videoSrc ?? null;
+  useEffect(() => {
+    setFilmOn(false);
+    if (!film) return;
+    const timer = window.setTimeout(() => setFilmOn(true), 420);
+    return () => window.clearTimeout(timer);
+  }, [film]);
+
+  const openLabel = current
+    ? current.videoSrc
+      ? copy.play
+      : current.internal
+        ? cardLabels.openInternal
+        : cardLabels.openExternal
+    : "";
+
+  const shots = seen.map((src) => (
+    <img
+      key={src}
+      src={src}
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      decoding="async"
+      width={1280}
+      height={800}
+      className={cn("fw-idx-shot", src === cover && "is-on")}
+    />
+  ));
 
   return (
-    <>
-      <div
-        role="tablist"
-        aria-label="Filter projects by service"
-        className={cn(
-          "flex gap-1 sm:-mx-0 sm:overflow-x-auto",
-          "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-        )}
-      >
+    <section className="border-t border-line bg-ground py-12 lg:py-20">
+      <Container>
         <div
-          ref={list}
-          className="relative flex w-full flex-wrap justify-center gap-1 rounded-[1.75rem] border border-line bg-surface p-1.5 shadow-card sm:w-max sm:min-w-full sm:flex-nowrap sm:justify-start sm:gap-1"
-        >
-          {pill ? (
-            <span
-              aria-hidden="true"
-              className="fw-tab-pill absolute inset-y-1.5 left-0 hidden rounded-full bg-ink sm:block"
-              style={{ "--x": `${pill.x}px`, "--w": `${pill.w}px` } as CSSProperties}
-            />
-          ) : null}
-          {FILTERS.map((filter) => {
-            const isActive = filter === active;
-            const count =
-              filter === FILTERS[0] ? ALL.length : ALL.filter((p) => p.category === filter).length;
-            return (
-              <button
-                key={filter}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setActive(filter)}
-                className={cn(
-                  "relative z-10 whitespace-nowrap rounded-full px-3 py-1.5 text-center text-[0.75rem] font-medium sm:flex-1 sm:px-4 sm:py-2.5 sm:text-sm",
-                  "transition-colors duration-300",
-                  isActive
-                    ? "bg-ink text-surface sm:bg-transparent"
-                    : "text-muted hover:text-ink",
-                )}
-              >
-                {filter}
-                <span className={cn("ml-1 text-[0.625rem] sm:ml-1.5 sm:text-xs", isActive ? "text-surface/70" : "text-muted/70")}>
-                  {count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Cover flow. A native horizontal scroller with snap points; each
-          card's tilt, scale and opacity come from its own inline view
-          timeline, so the one in the middle stands square and the rest
-          turn away on either side. It rides on its own, one card every
-          few seconds, and never stops: the set is doubled and the scroll
-          position wraps invisibly. Hovering holds it; arrows and a
-          counter for mouse users. */}
-      <div className="fw-flow relative mt-8 lg:mt-12">
-        <ul
-          ref={track}
-          className="fw-flow-track"
-          onPointerEnter={() => {
-            hold.current = true;
-          }}
-          onPointerLeave={() => {
-            hold.current = false;
-          }}
-        >
-          {[0, 1].map((copy) =>
-            visible.map((project, i) => (
-              <li
-                key={`${copy}-${project.name}-${project.note}`}
-                data-flow={copy * n + i}
-                aria-hidden={copy === 1}
-                className="fw-flow-item"
-              >
-                <ProjectCard
-                  {...project}
-                  vt={copy === 0 ? project.vt : null}
-                  index={i}
-                  showCategory
-                  className="h-full"
-                />
-              </li>
-            )),
+          role="tablist"
+          aria-label={copy.filterLabel}
+          className={cn(
+            "flex gap-1 sm:-mx-0 sm:overflow-x-auto",
+            "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
           )}
-        </ul>
-
-        <div className="mt-6 flex items-center justify-between gap-4">
-          <p className="hidden text-xs text-muted sm:block">{flow.hint}</p>
-          <div className="flex items-center gap-3">
-            <span className="text-sm tabular-nums text-muted">
-              <span className="font-semibold text-ink">{String(current + 1).padStart(2, "0")}</span>{" "}
-              {flow.of} {String(visible.length).padStart(2, "0")}
-            </span>
-            <button
-              type="button"
-              onClick={() => stepByHand(-1)}
-              aria-label={flow.prev}
-              className="grid size-11 place-items-center rounded-full border border-line bg-surface text-ink shadow-card transition-colors hover:border-accent/50 disabled:opacity-40"
-            >
-              <ChevronLeft className="size-5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => stepByHand(1)}
-              aria-label={flow.next}
-              className="grid size-11 place-items-center rounded-full border border-line bg-surface text-ink shadow-card transition-colors hover:border-accent/50 disabled:opacity-40"
-            >
-              <ChevronRight className="size-5" />
-            </button>
+        >
+          <div
+            ref={list}
+            className="relative flex w-full flex-wrap justify-center gap-1 rounded-[1.75rem] border border-line bg-surface p-1.5 shadow-card sm:w-max sm:min-w-full sm:flex-nowrap sm:justify-start sm:gap-1"
+          >
+            {pill ? (
+              <span
+                aria-hidden="true"
+                className="fw-tab-pill absolute inset-y-1.5 left-0 hidden rounded-full bg-ink sm:block"
+                style={{ "--fw-pill-x": `${pill.x}px`, "--fw-pill-w": `${pill.w}px` } as CSSProperties}
+              />
+            ) : null}
+            {FILTERS.map((filter) => {
+              const isActive = filter === active;
+              const count =
+                filter === FILTERS[0]
+                  ? ALL.length
+                  : ALL.filter((row) => row.category === filter).length;
+              return (
+                <button
+                  key={filter}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActive(filter)}
+                  className={cn(
+                    "relative z-10 whitespace-nowrap rounded-full px-3 py-1.5 text-center text-[0.75rem] font-medium sm:flex-1 sm:px-4 sm:py-2.5 sm:text-sm",
+                    "transition-colors duration-300",
+                    isActive ? "bg-ink text-surface sm:bg-transparent" : "text-muted hover:text-ink",
+                  )}
+                >
+                  {filter}
+                  <span
+                    className={cn(
+                      "ml-1 text-[0.625rem] sm:ml-1.5 sm:text-xs",
+                      isActive ? "text-surface/70" : "text-muted/70",
+                    )}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
-      </div>
-    </>
+
+        {n === 0 ? (
+          <p className="mt-10 text-[0.9375rem] text-muted lg:mt-14">{copy.empty}</p>
+        ) : (
+          <div className="mt-6 flex flex-col gap-6 lg:mt-12 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,27rem)] lg:gap-14 xl:grid-cols-[minmax(0,1fr)_minmax(0,31rem)]">
+            {/* The frame. Sticky on both: pinned under the bar on a phone,
+                riding the column on a laptop. */}
+            <div className="sticky top-[4.25rem] z-10 -mx-5 bg-ground px-5 pb-3 lg:top-28 lg:order-2 lg:mx-0 lg:self-start lg:bg-transparent lg:px-0 lg:pb-0">
+              <div
+                className="fw-idx-frame"
+                style={current?.tint ? ({ "--tint": current.tint } as CSSProperties) : undefined}
+              >
+                <span aria-hidden="true" className="fw-idx-glow" />
+                {current?.videoSrc ? (
+                  <div className="fw-idx-stage">
+                    {shots}
+                    {filmOn ? (
+                      <div className="absolute inset-0">
+                        <FilmTile src={current.videoSrc} className="size-full" />
+                      </div>
+                    ) : null}
+                  </div>
+                ) : current?.href ? (
+                  <a
+                    href={current.href}
+                    target={current.internal ? undefined : "_blank"}
+                    rel={current.internal ? undefined : "noopener noreferrer"}
+                    aria-label={`${current.name} — ${openLabel}`}
+                    className="fw-idx-stage block"
+                  >
+                    {shots}
+                  </a>
+                ) : (
+                  <div className="fw-idx-stage">{shots}</div>
+                )}
+
+                <div className="mt-4 hidden items-end justify-between gap-5 lg:flex">
+                  <div className="flex min-w-0 flex-col gap-1">
+                    <span className="fw-idx-open">
+                      {current?.videoSrc ? (
+                        <Play aria-hidden="true" className="size-3 fill-current" />
+                      ) : null}
+                      {openLabel}
+                    </span>
+                    <h3 className="truncate text-xl font-bold tracking-tight">{current?.name}</h3>
+                    <p className="truncate text-[0.8125rem] text-muted">{current?.note}</p>
+                  </div>
+                  <span className="shrink-0 text-sm tabular-nums text-muted">
+                    <span className="font-semibold text-ink">
+                      {String(Math.min(at, n - 1) + 1).padStart(2, "0")}
+                    </span>{" "}
+                    {copy.of} {String(n).padStart(2, "0")}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* The index itself. Text only — no covers, no tilt, no layers. */}
+            <div className="lg:order-1">
+              <ol className="fw-idx">
+                {visible.map((row, i) => {
+                  const isAt = i === Math.min(at, n - 1);
+                  const label = row.videoSrc
+                    ? copy.play
+                    : row.internal
+                      ? cardLabels.openInternal
+                      : cardLabels.openExternal;
+                  const body = (
+                    <>
+                      <span className="fw-idx-n">{String(i + 1).padStart(2, "0")}</span>
+                      <span className="fw-idx-text">
+                        <span className="fw-idx-name">{row.name}</span>
+                        <span className="fw-idx-note">{row.note}</span>
+                      </span>
+                      <span className="fw-idx-cat">{row.category}</span>
+                      <span className="fw-idx-go" aria-hidden="true">
+                        {row.videoSrc ? (
+                          <Play className="size-3.5 fill-current" />
+                        ) : row.internal ? (
+                          <ArrowRight className="size-4" />
+                        ) : (
+                          <ArrowUpRight className="size-4" />
+                        )}
+                      </span>
+                    </>
+                  );
+                  return (
+                    <li key={`${row.name}-${row.note}`} className="fw-idx-li">
+                      {row.href ? (
+                        <a
+                          href={row.href}
+                          target={row.internal ? undefined : "_blank"}
+                          rel={row.internal ? undefined : "noopener noreferrer"}
+                          aria-label={`${row.name} — ${label}`}
+                          onPointerEnter={() => setAt(i)}
+                          onFocus={() => setAt(i)}
+                          onClick={(e) => {
+                            if (coarse.current && !isAt) {
+                              e.preventDefault();
+                              setAt(i);
+                            }
+                          }}
+                          className={cn("fw-idx-row", isAt && "is-at")}
+                        >
+                          {body}
+                        </a>
+                      ) : (
+                        <button
+                          type="button"
+                          aria-label={`${row.name} — ${label}`}
+                          onPointerEnter={() => setAt(i)}
+                          onFocus={() => setAt(i)}
+                          onClick={() => setAt(i)}
+                          className={cn("fw-idx-row w-full text-left", isAt && "is-at")}
+                        >
+                          {body}
+                        </button>
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+              <p className="mt-5 text-xs text-muted">
+                <span className="hidden sm:inline">{copy.hint}</span>
+                <span className="sm:hidden">{copy.tapHint}</span>
+              </p>
+            </div>
+          </div>
+        )}
+      </Container>
+    </section>
   );
 }

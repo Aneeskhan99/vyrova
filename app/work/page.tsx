@@ -1,4 +1,5 @@
 import { Hero } from "@/components/sections/work/hero";
+import { Gallery } from "@/components/sections/work/gallery";
 import { Featured } from "@/components/sections/work/featured";
 import { CaseStudy } from "@/components/sections/work/case-study";
 import { Compare } from "@/components/sections/work/compare";
@@ -17,6 +18,7 @@ export default function WorkPage() {
   return (
     <>
       <Hero />
+      <Gallery />
       <Featured />
       <CaseStudy />
       <Compare />
