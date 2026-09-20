@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const SITE = {
   name: "VYROVA",
-  url: "https://vyrova.com",
+  url: "https://vyrova.co.uk",
   tagline: "Visuals that move. Technology that works.",
   email: "info@vyrova.co.uk",
 } as const;
