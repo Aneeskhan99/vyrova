@@ -35,21 +35,23 @@ export function Detail() {
                   <p className="text-xs font-medium uppercase tracking-[0.14em] text-accent">
                     {service.number} · {service.name}
                   </p>
-                  <h2 className="max-w-[16ch] text-[clamp(1.625rem,3vw,2.5rem)] font-bold leading-[1.1] tracking-[-0.025em]">
+                  <h2 className="max-w-none text-[clamp(1.5rem,3vw,2.5rem)] font-bold leading-[1.15] tracking-[-0.025em] lg:max-w-[16ch] lg:leading-[1.1]">
                     {service.headline}
                   </h2>
                   <p className="max-w-[46ch] leading-relaxed text-muted">
                     {service.body}
                   </p>
 
-                  <ul className="flex flex-col gap-2.5 pt-1">
+                  {/* Two up on a phone: four one-line facts stacked singly ran the
+                      card down the screen for no reason. */}
+                  <ul className="grid grid-cols-2 gap-x-3 gap-y-2.5 pt-1 lg:flex lg:flex-col">
                     {service.bullets.map((bullet) => (
-                      <li key={bullet} className="flex items-center gap-3">
+                      <li key={bullet} className="flex items-start gap-2.5 lg:items-center lg:gap-3">
                         <span
                           aria-hidden="true"
-                          className="size-2 shrink-0 rounded-full bg-cyan"
+                          className="mt-[0.45em] size-2 shrink-0 rounded-full bg-cyan lg:mt-0"
                         />
-                        <span className="text-[0.9375rem]">{bullet}</span>
+                        <span className="text-[0.8125rem] leading-snug lg:text-[0.9375rem] lg:leading-normal">{bullet}</span>
                       </li>
                     ))}
                   </ul>
