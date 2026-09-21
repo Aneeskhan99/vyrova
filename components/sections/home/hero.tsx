@@ -59,7 +59,12 @@ export function Hero() {
       <Container className="relative">
         <div className="grid items-center gap-10 pb-16 pt-12 lg:grid-cols-[auto_auto] lg:justify-center lg:gap-6 lg:pb-20 lg:pt-0 xl:gap-8">
           <div className="flex w-full min-w-0 max-w-[36rem] flex-col items-start gap-5 lg:w-[30rem] lg:gap-6 xl:w-[34rem] xl:max-w-[38rem] xl:gap-7">
-            <h1 className="fw-rise text-[clamp(1.875rem,3vw,2.625rem)] font-bold leading-[1.06] tracking-[-0.035em]">
+            {/* 3vw tops out at 42px, so every screen past about 1400px got the
+                  same size as a laptop. Stepped up from xl instead. The first
+                  line does not wrap, so the ceiling is what the widest
+                  rotating word leaves inside the 34rem column: 52px still
+                  clears it by 36px, 56px by only 7px. */}
+            <h1 className="fw-rise text-[clamp(1.875rem,3vw,2.625rem)] font-bold leading-[1.06] tracking-[-0.035em] xl:text-[3rem] 2xl:text-[3.25rem]">
               {/* Ordinary inline text with real spaces, so the word after
                   the rotating one moves with it as it changes width. */}
               <span className="relative block lg:whitespace-nowrap">
@@ -70,7 +75,7 @@ export function Hero() {
               <span className="block">{hero.headlineSecondLine}</span>
             </h1>
 
-            <p className="fw-rise fw-d1 max-w-[46ch] text-[1.0625rem] leading-relaxed text-muted">
+            <p className="fw-rise fw-d1 max-w-[46ch] text-[1.0625rem] leading-relaxed text-muted 2xl:text-[1.125rem]">
               {hero.subhead}
             </p>
 
