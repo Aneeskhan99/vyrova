@@ -58,8 +58,13 @@ export function Hero() {
 
       <Container className="relative">
         <div className="fw-hero-grid grid items-center gap-10 pb-16 pt-12 lg:grid-cols-[auto_auto] lg:justify-center lg:gap-6 lg:pb-20 lg:pt-0">
-          <div className="flex w-full min-w-0 max-w-[36rem] flex-col items-start gap-5 lg:w-[30rem] lg:gap-6 xl:w-[34rem] xl:max-w-[38rem] xl:gap-7">
-            <h1 className="fw-rise text-[clamp(1.875rem,3vw,2.625rem)] font-bold leading-[1.06] tracking-[-0.035em]">
+          <div className="flex w-full min-w-0 max-w-[36rem] flex-col items-start gap-5 lg:w-[30rem] lg:gap-6 xl:w-[34rem] xl:max-w-[38rem] xl:gap-7 2xl:w-[40rem] 2xl:max-w-[44rem]">
+            {/* 3vw tops out at 42px, so every screen past about 1400px was
+                getting a laptop's headline. Stepped up instead. The first line
+                never wraps, so the ceiling is whatever the widest rotating
+                word leaves inside the column: 52px in the 34rem column, and
+                60px once the 2xl step widens it to 40rem, with 74px spare. */}
+            <h1 className="fw-rise text-[clamp(1.875rem,3vw,2.625rem)] font-bold leading-[1.06] tracking-[-0.035em] xl:text-[3rem] 2xl:text-[3.75rem]">
               {/* Ordinary inline text with real spaces, so the word after
                   the rotating one moves with it as it changes width. */}
               <span className="relative block lg:whitespace-nowrap">
@@ -70,7 +75,7 @@ export function Hero() {
               <span className="block">{hero.headlineSecondLine}</span>
             </h1>
 
-            <p className="fw-rise fw-d1 max-w-[46ch] text-[1.0625rem] leading-relaxed text-muted">
+            <p className="fw-rise fw-d1 max-w-[46ch] text-[1.0625rem] leading-relaxed text-muted 2xl:text-[1.125rem]">
               {hero.subhead}
             </p>
 
