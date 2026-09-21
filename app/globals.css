@@ -654,6 +654,19 @@
    centred, the leftover splits evenly above and below at every size — a
    short laptop barely changes, a tall screen gains air on both sides. The
    bar is 5rem from a laptop up; the 4rem here before was the phone's. */
+/* The hero's two columns are fixed widths (34rem of text, 34rem of
+   orbit), so on a wide screen the pair stayed 1120px wide in the middle
+   of a 1664px container: roughly 390px of margin on each side and a 32px
+   sliver between the text and the mark. This hands half the leftover to
+   the gap as the screen grows, up to 8rem, so the two halves spread into
+   the space instead of huddling. At 1280px the sum is exactly the old
+   2rem, so nothing changes on a laptop. */
+@media (min-width: 1280px) {
+  .fw-hero-grid {
+    column-gap: clamp(2rem, (100vw - 1216px) / 2, 8rem);
+  }
+}
+
 @media (min-width: 1024px) {
   .fw-hero-stage {
     display: flex;
