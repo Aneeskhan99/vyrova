@@ -647,6 +647,22 @@
   to { transform: translate3d(-10vw, -8vw, 0) scale(1.15); }
 }
 
+/* The home hero stage. A screenful from a laptop up, but capped: left
+   uncapped at 100svh, a 1080 tall desktop put the whole 390px of leftover
+   under the content as empty floor while the headline sat hard against
+   the bar, because the section packed to flex-start. Capped at 52rem and
+   centred, the leftover splits evenly above and below at every size — a
+   short laptop barely changes, a tall screen gains air on both sides. The
+   bar is 5rem from a laptop up; the 4rem here before was the phone's. */
+@media (min-width: 1024px) {
+  .fw-hero-stage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: min(100svh - 5rem, 52rem);
+  }
+}
+
 .fw-floor {
   position: absolute;
   inset: auto 0 0 0;

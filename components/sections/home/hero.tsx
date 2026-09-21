@@ -23,8 +23,14 @@ export function Hero() {
   const inner = hero.orbit.filter((item) => item.ring === "inner");
   const outer = hero.orbit.filter((item) => item.ring === "outer");
 
+  // The stage is a screenful on a laptop, but capped. Uncapped, 100svh
+  // left about 390px of empty floor under the content on a tall desktop,
+  // because the slack all collected at the bottom (justify-start) while
+  // the headline sat hard against the navbar. Capped and centred, the
+  // leftover splits evenly above and below at every size. The bar is 5rem
+  // from a laptop up, not the 4rem it is on a phone.
   return (
-    <section className="relative overflow-hidden lg:min-h-[calc(100svh-4rem)] lg:flex lg:flex-col lg:justify-start">
+    <section className="fw-hero-stage relative overflow-hidden">
       {/* Backdrop: a slow aurora in the brand's cyan and violet, and a
           perspective grid floor that runs towards the horizon. Both are
           transform-only loops, paused when the hero is off screen. */}
