@@ -49,6 +49,8 @@ type Row = {
   /** Still shown in the frame: a screenshot, or a film's poster. */
   cover: string | null;
   videoSrc: string | null;
+  /** Shot 9:16. Stood in a phone rather than letterboxed into the stage. */
+  vertical: boolean;
   href: string | null;
   internal: boolean;
   tint: string | null;
@@ -64,6 +66,7 @@ const ALL: readonly Row[] = [
       category: p.category,
       cover: image ?? (videoSrc ? posterFor(videoSrc) : null),
       videoSrc,
+      vertical: "vertical" in p ? p.vertical : false,
       href: "href" in p ? p.href : null,
       internal: false,
       tint: null,
@@ -75,11 +78,17 @@ const ALL: readonly Row[] = [
     category: DESIGN_KIND,
     cover: designCover(p.slug),
     videoSrc: null,
+    vertical: false,
     href: `/work/${p.slug}/`,
     internal: true,
     tint: p.palette[0],
   })),
 ];
+
+/** Covers belonging to a 9:16 film, which the frame blurs into a backdrop. */
+const TALL_COVERS = new Set(
+  ALL.filter((row) => row.vertical && row.cover).map((row) => row.cover as string),
+);
 
 export function Gallery() {
   const [active, setActive] = useState<string>(FILTERS[0]);
@@ -168,7 +177,7 @@ export function Gallery() {
       decoding="async"
       width={1280}
       height={800}
-      className={cn("fw-idx-shot", src === cover && "is-on")}
+      className={cn("fw-idx-shot", TALL_COVERS.has(src) && "is-tall", src === cover && "is-on")}
     />
   ));
 
@@ -241,9 +250,27 @@ export function Gallery() {
               >
                 <span aria-hidden="true" className="fw-idx-glow" />
                 {current?.videoSrc ? (
-                  <div className="fw-idx-stage">
+                  <div className={cn("fw-idx-stage", current.vertical && "is-tall")}>
                     {shots}
-                    {filmOn ? (
+                    {current.vertical ? (
+                      // 9:16 in a 16:10 frame is mostly letterbox, so the
+                      // poster blurs out to fill the stage and the film itself
+                      // stands in a phone on top of it.
+                      <div className="fw-idx-phone">
+                        {filmOn ? (
+                          <FilmTile src={current.videoSrc} className="size-full" />
+                        ) : cover ? (
+                          <img
+                            src={cover}
+                            alt=""
+                            aria-hidden="true"
+                            width={720}
+                            height={1280}
+                            className="size-full object-cover"
+                          />
+                        ) : null}
+                      </div>
+                    ) : filmOn ? (
                       <div className="absolute inset-0">
                         <FilmTile src={current.videoSrc} className="size-full" />
                       </div>

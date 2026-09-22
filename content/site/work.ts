@@ -125,6 +125,15 @@ export const projects = [
     category: "SaaS animation",
     videoSrc: "/videos/saas-animation-stripe.mp4",
   },
+  {
+    name: "TalkLoop",
+    note: "SaaS animation · AI call platform",
+    category: "SaaS animation",
+    videoSrc: "/videos/talkloop-film.mp4",
+    // Shot 9:16. The index frame stands a vertical film in a phone
+    // instead of letterboxing it into the landscape stage.
+    vertical: true,
+  },
 ] as const;
 
 /**
